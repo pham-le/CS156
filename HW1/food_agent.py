@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+#Andres Chorro, Jannette Pham-Le, Justin Tieu
 def readTextFile():
 	f = open("map.txt")
 	line = f.read()
