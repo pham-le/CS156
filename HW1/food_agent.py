@@ -24,7 +24,7 @@ gx, gy = get_coords('%', problem)
 
 #Gets the specified heurist cost of the map:
 #1 = Manhattan, 2 = Euclidean, 3 = Special Heuristic
-def heuristic(type=1, map):
+def heuristic(map, type=1):
 	agent = get_coords('@', map)
 	ax, ay = agent
 	if type == 1: #Finds Manhattan distance
