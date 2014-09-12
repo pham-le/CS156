@@ -5,10 +5,16 @@
 
 from Queue import PriorityQueue
 
+class Node:
+	def __init__(self, state, path_cost, h_cost, agent):
+		self.state = state
+		self.path_cost = path_cost
+		self.h_cost = h_cost
+		self.agent = agent
+
 f = open("map.txt")
 problem = f.readlines() #stores each line of the map as an element of the list
 f.close()
-
 
 #Gets the coordinates of a symbol.
 def get_coords(c, map):
@@ -29,17 +35,44 @@ def heuristic(map, type=1):
 	ax, ay = agent
 	if type == 1: #Finds Manhattan distance
 		return abs(ax - gx) + abs(ay - gy)
-	if type == 2: #Finds Euclidean distance
+	elif type == 2: #Finds Euclidean distance
 		return (((ax - gx) ** 2) + ((ay - gy) ** 2)) ** .5
-	if type == 3: #Finds specialllsllLLkfsjd
-		return -1
+	elif type == 3: #Finds chess distance
+		return max(abs(ax - gx), abs(ay - gy))
 	else:
 		return -1
 
+def findMoves(node):
+	x = node.agent[0]
+	y = node.agent[1]
+	children = []
+
+	#check north
+	if (y - 1) >= 0 and problem[y-1][x] in '.%':
+		children.append((x,y-1))
+		# children.append(Node(problem, node.path_cost + 1, heuristic()))
+	#check east
+	if (x+1) <= len(problem[0]) and problem[y][x+1] in '.%':
+		children.append((x+1,y))
+	#check south
+	if (y + 1) <= len(problem) and problem[y+1][x] in '.%':
+		children.append((x,y+1))
+	#check west
+	if (x-1) >= 0 and problem[y][x-1] in '.%':
+		children.append((x-1,y))
+	return children
+
+def updateState(node, location):
+	#agent has moved 
+	node.state[node.agent[1]][node.agent[0]].replace('@', '.')
+	#move agent to new location
+	node.state[location[1]][location[0]].replace('.','@')
+	return node.state
+
 """MAIN ALGORITHM
-node = (problem, 0, heuristic(1, map))
+node = Node(problem, 0, heuristic(problem, 1), get_coords('@', problem))
 frontier = PriorityQueue()
-frontier.put(node[1] + node[2], node)
+frontier.put(node.path_cost + node.h_cost, node)
 explored = set()
 while True:
 	if frontier.empty():
@@ -50,11 +83,16 @@ while True:
 		print "solvable"
 		return #Success
 	explored.add(node)
-	#Need to find possible paths, and iterate through them.
+	for move in findMoves(node):
+		newState = updateState(node.map, node, move)
+		child = Node(newState, node.path_cost + 1, heuristic(newState, 1), move)
 """
 
 
-
-print problem
-print heuristic(2, problem)
-print get_coords('@', problem)
+node = Node(problem, 0, heuristic(problem, 1), get_coords('@', problem))
+print 'state:', node.state
+print 'heuristic cost:', node.h_cost
+print 'agent location:', node.agent
+for move in findMoves(node):
+	newState = updateState(node, move)
+	child = Node(newState, node.path_cost + 1, heuristic(newState, 1), move)

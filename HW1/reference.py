@@ -186,13 +186,13 @@ for y in range(m):
         if xy == 0:
             print '.', # space
         elif xy == 1:
-            print 'O', # obstacle
+            print '#', # obstacle
         elif xy == 2:
-            print 'S', # start
+            print '@', # start
         elif xy == 3:
-            print 'R', # route
+            print 'x', # route
         elif xy == 4:
-            print 'F', # finish
+            print '%', # finish
     print
 
 raw_input('Press Enter...')
