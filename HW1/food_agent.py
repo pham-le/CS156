@@ -12,19 +12,26 @@ class Node:
 		self.h_cost = h_cost
 		self.agent = agent
 
+#Creates a list of lists of characters.
 f = open("map.txt")
-problem = f.readlines() #stores each line of the map as an element of the list
+problem = []
+for line in f:
+    char = list(line)
+    if '\n' in char:
+        char.remove('\n')
+    problem.append(char)
 f.close()
 
 #Gets the coordinates of a symbol.
 def get_coords(c, map):
-	y = 0
-	for line in map:
-		x = line.find(c)
-		if x != -1: #found the symbol
-			return (x, y)
-		y = y + 1
-	return (-1, -1) #symbol not found
+    y = 0
+    for line in map:
+        if c in line:
+            x = line.index(c)
+            if x != -1:  #found the symbol
+                return (x, y)
+        y = y + 1
+    return (-1, -1)  #symbol not found
 
 gx, gy = get_coords('%', problem)
 
@@ -95,4 +102,5 @@ print 'heuristic cost:', node.h_cost
 print 'agent location:', node.agent
 for move in findMoves(node):
 	newState = updateState(node, move)
+	print "new state:", newState
 	child = Node(newState, node.path_cost + 1, heuristic(newState, 1), move)
