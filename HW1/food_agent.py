@@ -5,6 +5,11 @@
 
 from Queue import PriorityQueue
 
+#Stores a node
+#state: the list of list of characters representing the current state of the map
+#path_cost: the cost from the initial state to this space
+#h_cost: the hueristic cost from this point to the goal
+#agent: the coordinates of the agent
 class Node:
 	def __init__(self, state, path_cost, h_cost, agent):
 		self.state = state
@@ -12,13 +17,13 @@ class Node:
 		self.h_cost = h_cost
 		self.agent = agent
 
-#Creates a list of lists of characters.
+#Creates a list of lists of characters represeting the problem map.
 f = open("map.txt")
 problem = []
 for line in f:
     char = list(line)
-    if '\n' in char:
-        char.remove('\n')
+    if line[len(line) - 1] == '\n':
+        char.pop() #remove newline if it's there
     problem.append(char)
 f.close()
 
@@ -49,7 +54,7 @@ def heuristic(map, type=1):
 	else:
 		return -1
 
-def findMoves(node):
+def find_moves(node):
 	x = node.agent[0]
 	y = node.agent[1]
 	children = []
@@ -69,12 +74,17 @@ def findMoves(node):
 		children.append((x-1,y))
 	return children
 
-def updateState(node, location):
-	#agent has moved 
-	node.state[node.agent[1]][node.agent[0]].replace('@', '.')
+#returns the node's state map, but with the agent moved to location parameter.
+def update_map(node, location):
+	ax, ay = node.agent
+	lx, ly = location
+	new_map = node.state
+
+	#agent has moved, insert empty space ('.')
+	new_map[ay][ax] = '.'
 	#move agent to new location
-	node.state[location[1]][location[0]].replace('.','@')
-	return node.state
+	new_map[ly][lx] = '@'
+	return new_map
 
 """MAIN ALGORITHM
 node = Node(problem, 0, heuristic(problem, 1), get_coords('@', problem))
@@ -90,9 +100,9 @@ while True:
 		print "solvable"
 		return #Success
 	explored.add(node)
-	for move in findMoves(node):
-		newState = updateState(node.map, node, move)
-		child = Node(newState, node.path_cost + 1, heuristic(newState, 1), move)
+	for move in find_moves(node):
+		new_state = update_map(node.map, node, move)
+		child = Node(new_state, node.path_cost + 1, heuristic(new_state, 1), move)
 """
 
 
@@ -100,7 +110,5 @@ node = Node(problem, 0, heuristic(problem, 1), get_coords('@', problem))
 print 'state:', node.state
 print 'heuristic cost:', node.h_cost
 print 'agent location:', node.agent
-for move in findMoves(node):
-	newState = updateState(node, move)
-	print "new state:", newState
-	child = Node(newState, node.path_cost + 1, heuristic(newState, 1), move)
+print 'available moves:', find_moves(node)
+print 'updated map:', update_map(node, find_moves(node)[1])
