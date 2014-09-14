@@ -4,6 +4,7 @@
 #Andres Chorro, Jannette Pham-Le, Justin Tieu
 
 from Queue import PriorityQueue
+import copy
 
 #Stores a node
 #state: the list of list of characters representing the current state of the map
@@ -17,7 +18,7 @@ class Node:
 		self.h_cost = h_cost
 		self.agent = agent
 
-#Creates a list of lists of characters represeting the problem map.
+#Creates a list of lists of characters representing the problem map.
 f = open("map.txt")
 problem = []
 for line in f:
@@ -37,6 +38,14 @@ def get_coords(c, map):
                 return (x, y)
         y = y + 1
     return (-1, -1)  #symbol not found
+
+def print_map(map):
+	for line in map:
+		for c in line:
+			print c,
+		print
+	print
+
 
 gx, gy = get_coords('%', problem)
 
@@ -60,17 +69,16 @@ def find_moves(node):
 	children = []
 
 	#check north
-	if (y - 1) >= 0 and problem[y-1][x] in '.%':
+	if (y - 1) >= 0 and node.state[y-1][x] in '.%':
 		children.append((x,y-1))
-		# children.append(Node(problem, node.path_cost + 1, heuristic()))
 	#check east
-	if (x+1) <= len(problem[0]) and problem[y][x+1] in '.%':
+	if (x+1) <= len(node.state[0]) and node.state[y][x+1] in '.%':
 		children.append((x+1,y))
 	#check south
-	if (y + 1) <= len(problem) and problem[y+1][x] in '.%':
+	if (y + 1) <= len(node.state) and node.state[y+1][x] in '.%':
 		children.append((x,y+1))
 	#check west
-	if (x-1) >= 0 and problem[y][x-1] in '.%':
+	if (x-1) >= 0 and node.state[y][x-1] in '.%':
 		children.append((x-1,y))
 	return children
 
@@ -78,7 +86,7 @@ def find_moves(node):
 def update_map(node, location):
 	ax, ay = node.agent
 	lx, ly = location
-	new_map = node.state
+	new_map = copy.deepcopy(node.state)
 
 	#agent has moved, insert empty space ('.')
 	new_map[ay][ax] = '.'
@@ -86,29 +94,40 @@ def update_map(node, location):
 	new_map[ly][lx] = '@'
 	return new_map
 
-"""MAIN ALGORITHM
-node = Node(problem, 0, heuristic(problem, 1), get_coords('@', problem))
-frontier = PriorityQueue()
-frontier.put(node.path_cost + node.h_cost, node)
-explored = set()
-while True:
-	if frontier.empty():
-		print "unsolvable"
-		return #Failure, finish later
-	node = frontier.get()
-	if node[2] == 0: #goal-check
-		print "solvable"
-		return #Success
-	explored.add(node)
-	for move in find_moves(node):
-		new_state = update_map(node.map, node, move)
-		child = Node(new_state, node.path_cost + 1, heuristic(new_state, 1), move)
-"""
+#MAIN ALGORITHM
+def A_Star():
+	node = Node(problem, 0, heuristic(problem, 1), get_coords('@', problem))
+	frontier = PriorityQueue()
+	frontier.put((node.path_cost + node.h_cost, node)) #add tupple
+	explored = set()
+	while True:
+		if frontier.empty():
+			print "unsolvable" #Failure, finish later
+			return
+		node = frontier.get()[1]
+		if node.h_cost == 0: #goal-check
+			print "solvable" #Success
+			return
+		explored.add(node.agent) #list of coordinates that have been explored
+		for move in find_moves(node):
+			new_state = update_map(node, move)
+			child = Node(new_state, node.path_cost + 1, heuristic(new_state, 1), move)
+			print_map(new_state)
+			#if (child not in frontier.queue) and (child.agent not in explored):
+			frontier.put((child.path_cost + child.h_cost, child))
+
+			
 
 
+
+A_Star()
+
+print 'done testing A*'
 node = Node(problem, 0, heuristic(problem, 1), get_coords('@', problem))
 print 'state:', node.state
 print 'heuristic cost:', node.h_cost
 print 'agent location:', node.agent
 print 'available moves:', find_moves(node)
+print 'before update', node.state
 print 'updated map:', update_map(node, find_moves(node)[1])
+print 'after update', node.state
