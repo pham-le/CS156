@@ -118,5 +118,7 @@ def a_star():
 			child = Node(new_state, node.path_cost + 1, heuristic(new_state, h_type), move)
 			if (child not in frontier.queue) and (child.agent not in explored):
 				frontier.put((child.path_cost + child.h_cost, child))
+			for anode in frontier.queue:
+				if anode.
 			
 a_star()
