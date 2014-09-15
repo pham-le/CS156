@@ -106,20 +106,13 @@ def a_star(input_h_type):
 	node_map = [] #maps nodes to nodes, used to reconstruct path
 	i = 0
 	while True:
-		if(i >= 0):
-			if(i == 0):
-				print "Initial:"
-			else:
-				print "Step %d:" % (i)
-			print_map(node.state)
-		i = i+1
+		print_map(node.state)
 		if frontier.empty():
 			print "The maze is unsolvable:"
 			print_map(problem)
 			return
 		node = frontier.get()[1]
 		if node.h_cost == 0: #goal-check
-			print "Step %d:" % (i)
 			print_map(node.state)
 			print "solvable" #Success
 			return
