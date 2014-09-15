@@ -49,7 +49,7 @@ def print_map(map):
 
 
 gx, gy = get_coords('%', problem)
-h_type = 3
+h_type = 1
 
 #Gets the specified heurist cost of the map:
 #1 = Manhattan, 2 = Euclidean, 3 = Special Heuristic
@@ -102,23 +102,35 @@ def a_star():
 	frontier = PriorityQueue()
 	frontier.put((node.path_cost + node.h_cost, node)) #add tupple
 	explored = set()
+	node_map = [] #maps nodes to nodes, used to reconstruct path
 	while True:
 		print_map(node.state)
 		if frontier.empty():
-			print "The maze is unsolvable:" #Failure, finish later
+			print "The maze is unsolvable:"
 			print_map(problem)
 			return
 		node = frontier.get()[1]
 		if node.h_cost == 0: #goal-check
+			print_map(node.state)
 			print "solvable" #Success
 			return
 		explored.add(node.agent) #list of coordinates that have been explored
 		for move in find_moves(node):
 			new_state = update_map(node, move)
 			child = Node(new_state, node.path_cost + 1, heuristic(new_state, h_type), move)
-			if (child not in frontier.queue) and (child.agent not in explored):
+
+			#child is not in frontier or explored.  Put child in frontier.
+			if (((child.h_cost + child.path_cost, child) not in frontier.queue) 
+				and (child.agent not in explored)):
 				frontier.put((child.path_cost + child.h_cost, child))
-			for anode in frontier.queue:
-				if anode.
-			
+
+			#child is in frontier, with higher cost.  Replace with cheaper child.
+			else:
+				for node_tuple in frontier.queue:
+					if (((node_tuple[1].agent) == child.agent)
+						and node_tuple[0] > child.path_cost + child.h_cost):
+						frontier.queue.remove(node_tuple)
+						frontier.put((child.path_cost + child.h_cost, child))
+
+
 a_star()
