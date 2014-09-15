@@ -4,7 +4,7 @@
 #Andres Chorro, Jannette Pham-Le, Justin Tieu
 
 from Queue import PriorityQueue
-import copy
+import copy, sys
 
 #Stores a node
 #state: the list of list of characters representing the current state of the map
@@ -19,14 +19,16 @@ class Node:
 		self.agent = agent
 
 #Creates a list of lists of characters representing the problem map.
-f = open("map.txt")
-problem = []
-for line in f:
-    char = list(line)
-    if line[len(line) - 1] == '\n':
-        char.pop() #remove newline if it's there
-    problem.append(char)
-f.close()
+def initializeMap(filename):
+	f = open(filename)
+	problem = []
+	for line in f:
+	    char = list(line)
+	    if line[len(line) - 1] == '\n':
+	        char.pop() #remove newline if it's there
+	    problem.append(char)
+	f.close()
+	return problem
 
 #Gets the coordinates of a symbol.
 def get_coords(c, map):
@@ -48,14 +50,13 @@ def print_map(map):
 	print
 
 
-gx, gy = get_coords('%', problem)
-h_type = 1
 
 #Gets the specified heurist cost of the map:
 #1 = Manhattan, 2 = Euclidean, 3 = Special Heuristic
 def heuristic(map, type=1):
 	agent = get_coords('@', map)
 	ax, ay = agent
+
 	if type == 1: #Finds Manhattan distance
 		return abs(ax - gx) + abs(ay - gy)
 	elif type == 2: #Finds Euclidean distance
@@ -97,12 +98,13 @@ def update_map(node, location):
 	return new_map
 
 #MAIN ALGORITHM
-def a_star():
-	node = Node(problem, 0, heuristic(problem, h_type), get_coords('@', problem))
+def a_star(input_h_type):
+	node = Node(problem, 0, heuristic(problem, input_h_type), get_coords('@', problem))
 	frontier = PriorityQueue()
 	frontier.put((node.path_cost + node.h_cost, node)) #add tupple
 	explored = set()
 	node_map = [] #maps nodes to nodes, used to reconstruct path
+	i = 0
 	while True:
 		print_map(node.state)
 		if frontier.empty():
@@ -117,7 +119,7 @@ def a_star():
 		explored.add(node.agent) #list of coordinates that have been explored
 		for move in find_moves(node):
 			new_state = update_map(node, move)
-			child = Node(new_state, node.path_cost + 1, heuristic(new_state, h_type), move)
+			child = Node(new_state, node.path_cost + 1, heuristic(new_state, input_h_type), move)
 
 			#child is not in frontier or explored.  Put child in frontier.
 			if (((child.h_cost + child.path_cost, child) not in frontier.queue) 
@@ -132,5 +134,18 @@ def a_star():
 						frontier.queue.remove(node_tuple)
 						frontier.put((child.path_cost + child.h_cost, child))
 
+input_file = ""
+input_h_type = -1
+for arg in sys.argv:
+	if('.txt' in arg):
+		input_file = arg
+	elif('manhattan' == arg):
+		input_h_type = 1
+	elif('euclidean' == arg):
+		input_h_type = 2
+	elif('made_up' == arg):
+		input_h_type = 3
 
-a_star()
+problem = initializeMap(input_file)
+gx, gy = get_coords('%', problem)
+a_star(input_h_type)
