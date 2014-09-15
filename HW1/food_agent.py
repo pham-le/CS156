@@ -49,6 +49,7 @@ def print_map(map):
 
 
 gx, gy = get_coords('%', problem)
+h_type = 3
 
 #Gets the specified heurist cost of the map:
 #1 = Manhattan, 2 = Euclidean, 3 = Special Heuristic
@@ -73,15 +74,14 @@ def find_moves(node):
 	if (y - 1) >= 0 and node.state[y-1][x] in '.%':
 		children.append((x,y-1))
 	#check east
-	if (x+1) <= len(node.state[0]) and node.state[y][x+1] in '.%':
+	if (x + 1) <= len(node.state[y]) - 1 and node.state[y][x+1] in '.%':
 		children.append((x+1,y))
 	#check south
-	if (y + 1) <= len(node.state) and node.state[y+1][x] in '.%':
+	if (y + 1) <= len(node.state) - 1 and node.state[y+1][x] in '.%':
 		children.append((x,y+1))
 	#check west
-	if (x-1) >= 0 and node.state[y][x-1] in '.%':
+	if (x - 1) >= 0 and node.state[y][x-1] in '.%':
 		children.append((x-1,y))
-	print 'moves:', children
 	return children
 
 #returns the node's state map, but with the agent moved to location parameter.
@@ -97,14 +97,16 @@ def update_map(node, location):
 	return new_map
 
 #MAIN ALGORITHM
-def A_Star():
-	node = Node(problem, 0, heuristic(problem, 1), get_coords('@', problem))
+def a_star():
+	node = Node(problem, 0, heuristic(problem, h_type), get_coords('@', problem))
 	frontier = PriorityQueue()
 	frontier.put((node.path_cost + node.h_cost, node)) #add tupple
 	explored = set()
 	while True:
+		print_map(node.state)
 		if frontier.empty():
-			print "unsolvable" #Failure, finish later
+			print "The maze is unsolvable:" #Failure, finish later
+			print_map(problem)
 			return
 		node = frontier.get()[1]
 		if node.h_cost == 0: #goal-check
@@ -113,23 +115,8 @@ def A_Star():
 		explored.add(node.agent) #list of coordinates that have been explored
 		for move in find_moves(node):
 			new_state = update_map(node, move)
-			child = Node(new_state, node.path_cost + 1, heuristic(new_state, 1), move)
-			print_map(new_state)
-			#if (child not in frontier.queue) and (child.agent not in explored):
-			frontier.put((child.path_cost + child.h_cost, child))
-
+			child = Node(new_state, node.path_cost + 1, heuristic(new_state, h_type), move)
+			if (child not in frontier.queue) and (child.agent not in explored):
+				frontier.put((child.path_cost + child.h_cost, child))
 			
-
-
-
-A_Star()
-
-print 'done testing A*'
-node = Node(problem, 0, heuristic(problem, 1), get_coords('@', problem))
-print 'state:', node.state
-print 'heuristic cost:', node.h_cost
-print 'agent location:', node.agent
-print 'available moves:', find_moves(node)
-print 'before update', node.state
-print 'updated map:', update_map(node, find_moves(node)[1])
-print 'after update', node.state
+a_star()
