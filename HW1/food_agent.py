@@ -39,6 +39,7 @@ def get_coords(c, map):
         y = y + 1
     return (-1, -1)  #symbol not found
 
+#print a map to console
 def print_map(map):
 	for line in map:
 		for c in line:
@@ -80,6 +81,7 @@ def find_moves(node):
 	#check west
 	if (x-1) >= 0 and node.state[y][x-1] in '.%':
 		children.append((x-1,y))
+	print 'moves:', children
 	return children
 
 #returns the node's state map, but with the agent moved to location parameter.
