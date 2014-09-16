@@ -1,7 +1,10 @@
 #!/usr/bin/python
 #CS 156 Intro to AI - 01
 #Homework 1, 09/15/2014
-#Andres Chorro, Jannette Pham-Le, Justin Tieu
+#Andres Chorro		- 007340983
+#Jannette Pham-Le	- 007855120
+#Justin Tieu		- 007789678
+
 
 from Queue import PriorityQueue
 import copy, sys
@@ -44,19 +47,14 @@ def get_coords(c, map):
 #print a map to console
 def print_map(map):
 	for line in map:
-		for c in line:
-			print c,
-		print
+		print ''.join(line)
 	print
-
-
 
 #Gets the specified heurist cost of the map:
 #1 = Manhattan, 2 = Euclidean, 3 = Special Heuristic
 def heuristic(map, type=1):
 	agent = get_coords('@', map)
 	ax, ay = agent
-
 	if type == 1: #Finds Manhattan distance
 		return abs(ax - gx) + abs(ay - gy)
 	elif type == 2: #Finds Euclidean distance
@@ -103,18 +101,21 @@ def a_star(input_h_type):
 	frontier = PriorityQueue()
 	frontier.put((node.path_cost + node.h_cost, node)) #add tupple
 	explored = set()
-	node_map = [] #maps nodes to nodes, used to reconstruct path
-	i = 0
+	node_map = {} #maps nodes to nodes, used to reconstruct path
 	while True:
-		print_map(node.state)
 		if frontier.empty():
 			print "The maze is unsolvable:"
 			print_map(problem)
 			return
 		node = frontier.get()[1]
 		if node.h_cost == 0: #goal-check
-			print_map(node.state)
-			print "solvable" #Success
+			print "Initial:" #Success
+			i = 0
+			for n in get_path_list(node_map, node): #print each node in solution path
+				if i > 0:
+					print "Step %d:" % i
+				print_map(n.state)
+				i = i + 1
 			return
 		explored.add(node.agent) #list of coordinates that have been explored
 		for move in find_moves(node):
@@ -125,6 +126,7 @@ def a_star(input_h_type):
 			if (((child.h_cost + child.path_cost, child) not in frontier.queue) 
 				and (child.agent not in explored)):
 				frontier.put((child.path_cost + child.h_cost, child))
+				node_map[child] = node
 
 			#child is in frontier, with higher cost.  Replace with cheaper child.
 			else:
@@ -133,6 +135,15 @@ def a_star(input_h_type):
 						and node_tuple[0] > child.path_cost + child.h_cost):
 						frontier.queue.remove(node_tuple)
 						frontier.put((child.path_cost + child.h_cost, child))
+						node_map[child] = node
+
+def get_path_list(node_map, current):
+	if current in node_map:
+		partial = get_path_list(node_map, node_map[current])
+		return partial + [current]
+	else:
+		return [current]
+
 
 input_file = ""
 input_h_type = -1
