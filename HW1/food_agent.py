@@ -48,7 +48,6 @@ def get_coords(c, map):
 def print_map(map):
 	for line in map:
 		print ''.join(line)
-	print
 
 #Gets the specified heurist cost of the map:
 #1 = Manhattan, 2 = Euclidean, 3 = Special Heuristic
@@ -113,9 +112,11 @@ def a_star(input_h_type):
 			i = 0
 			for n in get_path_list(node_map, node): #print each node in solution path
 				if i > 0:
+					print
 					print "Step %d:" % i
 				print_map(n.state)
 				i = i + 1
+			print('Problem Solved! I had some noodles!')
 			return
 		explored.add(node.agent) #list of coordinates that have been explored
 		for move in find_moves(node):
