@@ -13,6 +13,7 @@ class CrazyEights:
     """A class that contains AI for crazy eights play"""
     def move(partial_state):
     def movePefectKnowedge(state):
+    def moveRandom(state):
 
 
 hand = [] #without repeats in the range between 0 - 51
