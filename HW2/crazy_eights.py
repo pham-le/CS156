@@ -6,12 +6,14 @@ Homework 2, 10/01/2014
 
 Andres Chorro - 007340983
 Jannette Pham-Le - 007855120
-Justin Tieu	- 007789678
+Justin Tieu - 007789678
 """
 
-def move(partial_state):
+class CrazyEights:
+    """A class that contains AI for crazy eights play"""
+    def move(partial_state):
+    def movePefectKnowedge(state):
 
-def movePefectKnowedge(state):
 
 hand = [] #without repeats in the range between 0 - 51
 deck = [] #without repeats in the range between 0 - 51 representing the cards that are face down that have not been picked up by either player
