@@ -60,7 +60,11 @@ class CrazyEights:
 			face_up_card = current card next move must be made on, history = [moves]
 			Plays a card that is of the same suit or same number or an 8 
 		"""		
-		return partial_state
+		hand = partial_state[2]
+		for card in hand:
+			if validMove(card):
+				return(1, card, card/13, 0)
+		return(1, self.history[-1][1], self.history[-1][2],1)
 
 	def movePefectKnowedge(self, state):
 		""" Receives a tuple (deck, hand, partial_state), hand represents the other player's hand """
