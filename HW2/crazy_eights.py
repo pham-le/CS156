@@ -61,8 +61,11 @@ class CrazyEights:
         self.appendHistory(move)
         if (self.currentPlayer == 0):
             self.player_one_hand.remove(move[1])
+            self.currentPlayer = 1
         else:
             self.player_two_hand.remove(move[1])
+            self.currentPlayer = 0
+        # check last card played and update currentPlayer
 
     def move(self, partial_state):
         """
@@ -72,7 +75,7 @@ class CrazyEights:
         """
         hand = partial_state[2]
         for card in hand:
-            if validMove(card):
+            if self.validMove(card):
                 return (1, card, card / 13, 0)
         return (1, self.history[-1][1], self.history[-1][2], 1)
 
@@ -82,4 +85,36 @@ class CrazyEights:
 
     def isGameOver(self):
         """ Checks if the game is over yet """
-        return not (len(self.deck) > 0)
+        checksPlayerHand = False
+        for card in self.player_one_hand:
+            if(self.validMove(card)):
+                checksPlayerHand = True
+
+        checksComputerHand = False
+        for card in self.player_one_hand:
+            if(self.validMove(card)):
+                checksComputerHand = True
+
+        return (len(self.deck) > 0) and checksComputerHand and checksPlayerHand
+
+    def getWinner(self):
+        if(len(self.player_one_hand) < len(self.player_two_hand)):
+            return "Player wins!"
+        elif(len(self.player_one_hand) > len(self.player_two_hand)):
+            return "Computer wins!"
+        else:
+            playerMin = self.player_one_hand[0]
+            for card in self.player_one_hand:
+                if card < playerMin:
+                    playerMin = card
+
+            computerMin = self.player_two_hand[0]
+            for card in self.player_two_hand:
+                if card < computerMin:
+                    computerMin = card
+            if playerMin < computerMin:
+                return "Player wins!"
+            elif computerMin < playerMin:
+                return "Computer wins!"
+            else:
+                return "error"
