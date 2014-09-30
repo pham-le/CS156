@@ -17,8 +17,8 @@ class CrazyEights:
         """A class that contains AI for crazy eights play"""
         self.deck = self.initializeDeck()  # builds and shuffles deck
         self.currentPlayer = currentPlayer
-        self.player_one_hand = self.draw(8)  # draws 8 cards for player 1
-        self.player_two_hand = self.draw(8)  # draws 8 cards for player 2
+        self.human_hand = self.draw(8)  # draws 8 cards for player 1
+        self.computer_hand = self.draw(8)  # draws 8 cards for player 2
         self.history = self.initializeHistory()  # new game contains no quadruple in its History
 
     def initializeDeck(self):
@@ -38,23 +38,13 @@ class CrazyEights:
         self.deck = self.deck[:-1 * numCards]
         return cards
 
-    def appendHistory(self, move):
-        """
-            History appends a move that is a quadruple (player_num, face_up_card, suit, number_of_cards)
-            faceupcard = card after the move, suit = next suit that must be played, numofcards = num of cards player picked up if any
-        """
-        self.history.append(move)
-
     def validMove(self, card):
         """returns true if card (the card being played) is legally
         playable after move"""
-        face_up = self.history[-1][1]  # the face up card on to play on
+        face_up = self.history[-1][1]  # the face up card to play on
         opponent_drew = self.history[-1][3] != 0  # whether the opponent drew last turn
         if (face_up in [1, 14, 27, 40] and not opponent_drew): #last play was a 2
-            if card in [1, 14, 27, 40]: #playing a 2 on a 2 is legal
-                return True
-            else:
-                return False 
+            return card in [1, 14, 27, 40]: #playing a 2 on a 2 is legal 
         elif ((card - 7) % 13 == 0):  # card is an 8, always playable
             return True
         elif (card / 13 == face_up / 13):  # cards are the same suit
@@ -68,10 +58,10 @@ class CrazyEights:
         """ Executes special cards. Returns true if opposing player's turn is skipped """
         if (card == 11):  # card is the Queen of Spades, make opponent draw 5
             if(self.currentPlayer == 0):  # if player is human
-                self.player_two_hand = self.player_two_hand + self.draw(5)  # make ai draw
+                self.computer_hand = self.computer_hand + self.draw(5)  # make ai draw
                 return True
             else:  # if player is ai
-                self.player_one_hand = self.player_one_hand + self.draw(5)  # make human draw
+                self.human_hand = self.human_hand + self.draw(5)  # make human draw
                 return True
         # elif card is number 2
         elif((card - 10) % 13 == 0):  # card is Jack, make opponent skip turn
@@ -81,15 +71,15 @@ class CrazyEights:
 
     def executeMove(self, move):
         """ Assumes player's move is valid and continues to execute the move """
-        self.appendHistory(move)
+        self.history.append(move)
         if (self.currentPlayer == 0):
-            self.player_one_hand.remove(move[1])
+            self.human_hand.remove(move[1])
             if(self.executeSpecialMove(move[1])):  # checks if card is a special card & execute it if it is
                 self.currentPlayer = self.currentPlayer  # skip opposing player's turn
             else:
                 self.currentPlayer = 1
         else:
-            self.player_two_hand.remove(move[1])
+            self.computer_hand.remove(move[1])
             if(self.executeSpecialMove(move[1])):  # checks if card is a special card & execute it if it is
                 self.currentPlayer = self.currentPlayer  # skip opposing player's turn
             else:
@@ -114,12 +104,12 @@ class CrazyEights:
     def isGameOver(self):
         """ Checks if the game is over yet """
         checksPlayerHand = False
-        for card in self.player_one_hand:
+        for card in self.human_hand:
             if(self.validMove(card)):
                 checksPlayerHand = True
 
         checksComputerHand = False
-        for card in self.player_one_hand:
+        for card in self.human_hand:
             if(self.validMove(card)):
                 checksComputerHand = True
 
@@ -127,18 +117,18 @@ class CrazyEights:
 
     def getWinner(self):
         """ Assumes game is over. Gets winner of game based on hands """
-        if(len(self.player_one_hand) < len(self.player_two_hand)):
+        if(len(self.human_hand) < len(self.computer_hand)):
             return "Player wins!"
-        elif(len(self.player_one_hand) > len(self.player_two_hand)):
+        elif(len(self.human_hand) > len(self.computer_hand)):
             return "Computer wins!"
         else:
-            playerMin = self.player_one_hand[0]
-            for card in self.player_one_hand:
+            playerMin = self.human_hand[0]
+            for card in self.human_hand:
                 if card < playerMin:
                     playerMin = card
 
-            computerMin = self.player_two_hand[0]
-            for card in self.player_two_hand:
+            computerMin = self.computer_hand[0]
+            for card in self.computer_hand:
                 if card < computerMin:
                     computerMin = card
             if playerMin < computerMin:

@@ -32,8 +32,8 @@ ce = CrazyEights(turn)
 
 # alias
 deck = ce.deck
-player_hand = ce.player_one_hand
-computer_hand = ce.player_two_hand
+player_hand = ce.human_hand
+computer_hand = ce.computer_hand
 
 while ce.isGameOver():
     print "Face up pile:", ce.history
