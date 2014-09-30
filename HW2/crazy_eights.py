@@ -49,13 +49,13 @@ class CrazyEights:
         """returns true if card (the card being played) is legally
         playable after move"""
         face_up = self.history[-1][1]  # the face up card on to play on
-        if ((card - 1) % 13 == 0):  # card is an 2, always playable
-            return True
+        opponent_drew = self.history[-1][3] != 0  # whether the opponent drew last turn
+        if (face_up in [1, 14, 27, 40] and not opponent_drew): #last play was a 2
+            if card in [1, 14, 27, 40]: #playing a 2 on a 2 is legal
+                return True
+            else:
+                return False 
         elif ((card - 7) % 13 == 0):  # card is an 8, always playable
-            return True
-        elif ((card - 10) % 13 == 0):  # card is an Jack, always playable
-            return True
-        elif (card == 11):  # card is the Queen of Spades, always playable
             return True
         elif (card / 13 == face_up / 13):  # cards are the same suit
             return True
