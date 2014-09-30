@@ -33,6 +33,7 @@ class CrazyEights:
         return [(self.currentPlayer, card, card / 13, 0)]
 
     def draw(self, numCards):
+    	""" Helper function to draw x number of cards from the deck"""
         cards = self.deck[-1 * numCards:]
         self.deck = self.deck[:-1 * numCards]
         return cards
@@ -48,7 +49,13 @@ class CrazyEights:
         """returns true if card (the card being played) is legally
         playable after move"""
         face_up = self.history[-1][1]  # the face up card on to play on
-        if ((card - 7) % 13 == 0):  # card is an 8, always playable
+        if ((card - 1) % 13 == 0):  # card is an 2, always playable
+            return True
+        elif ((card - 7) % 13 == 0):  # card is an 8, always playable
+            return True
+        elif ((card - 10) % 13 == 0):  # card is an Jack, always playable
+            return True
+        elif (card == 11):  # card is the Queen of Spades, always playable
             return True
         elif (card / 13 == face_up / 13):  # cards are the same suit
             return True
@@ -57,15 +64,36 @@ class CrazyEights:
         else:
             return False
 
+    def executeSpecialMove(self, card):
+        """ Executes special cards. Returns true if opposing player's turn is skipped """
+        if (card == 11):  # card is the Queen of Spades, make opponent draw 5
+            if(self.currentPlayer == 0):  # if player is human
+                self.player_two_hand = self.player_two_hand + self.draw(5)  # make ai draw
+                return True
+            else:  # if player is ai
+                self.player_one_hand = self.player_one_hand + self.draw(5)  # make human draw
+                return True
+        # elif card is number 2
+        elif((card - 10) % 13 == 0):  # card is Jack, make opponent skip turn
+            return True
+        else:
+            return False
+
     def executeMove(self, move):
+        """ Assumes player's move is valid and continues to execute the move """
         self.appendHistory(move)
         if (self.currentPlayer == 0):
             self.player_one_hand.remove(move[1])
-            self.currentPlayer = 1
+            if(self.executeSpecialMove(move[1])):  # checks if card is a special card & execute it if it is
+                self.currentPlayer = self.currentPlayer  # skip opposing player's turn
+            else:
+                self.currentPlayer = 1
         else:
             self.player_two_hand.remove(move[1])
-            self.currentPlayer = 0
-        # check last card played and update currentPlayer
+            if(self.executeSpecialMove(move[1])):  # checks if card is a special card & execute it if it is
+                self.currentPlayer = self.currentPlayer  # skip opposing player's turn
+            else:
+                self.currentPlayer = 0
 
     def move(self, partial_state):
         """
@@ -98,6 +126,7 @@ class CrazyEights:
         return (len(self.deck) > 0) and checksComputerHand and checksPlayerHand
 
     def getWinner(self):
+        """ Assumes game is over. Gets winner of game based on hands """
         if(len(self.player_one_hand) < len(self.player_two_hand)):
             return "Player wins!"
         elif(len(self.player_one_hand) > len(self.player_two_hand)):
