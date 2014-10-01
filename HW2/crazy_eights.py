@@ -37,6 +37,8 @@ class CrazyEights:
     def draw(self, playernum, numCards):
     	""" Helper function to draw numcards number of cards from the deck
         for player payernum (0 for human, 1 for computer)"""
+        if numCards > len(self.deck):
+            numCards = len(self.deck)
         cards = self.deck[-1 * numCards:]
         self.deck = self.deck[:-1 * numCards]
         if playernum == 0:
