@@ -46,60 +46,79 @@ class CrazyEights:
         else:
             self.computer_hand = self.computer_hand + cards
 
-    def validMove(self, card):
+    def validMove(self, move):
         """returns true if card (the card being played) is legally
         playable after move"""
+        card = move[1]
         face_up = self.history[-1][1]  # the face up card to play on
-        opponent_drew = self.history[-1][3] != 0  # whether the opponent drew last turn
-        if (face_up in [1, 14, 27, 40] and not opponent_drew): #last play was a 2
-            return card in [1, 14, 27, 40] #playing a 2 on a 2 is legal 
-        elif ((card - 7) % 13 == 0):  # card is an 8, always playable
-            return True
-        elif (card / 13 == face_up / 13):  # cards are the same suit
-            return True
-        elif (card % 13 == face_up % 13):  # cards are the same value
-            return True
-        else:
+        suit = face_up/13 #the suit to play on
+        if (move[3] == 0 and #trying to play
+                ((self.currentPlayer == 0 and card not in self.human_hand) or
+                (self.currentPlayer == 1 and card not in self.computer_hand))):
+            print "INVALID: Card is not in your hand!"
             return False
+        if face_up in [7, 20, 33, 46]:  #8 face-up, reset suit
+            suit = self.history[-1][2]
+        opponent_drew = self.history[-1][3] != 0  #whether the opponent drew last turn
+        if ((len(self.history) > 1) #not first turn
+                and (face_up in [1, 14, 27, 40]) #face-up 2
+                and (not opponent_drew) #opponent didn't draw
+                and (card not in [1, 14, 27, 40]) #you're not playing a 2
+                and (move[3] == 0)): #you're trying to not draw
+            print "INVALID: You must play a 2 or draw"
+            return False
+        elif (card in [7, 20, 33, 46]): #8 always valid at this point
+            return True 
+        elif ((card / 13 !=  suit) 
+                and (card % 13 != face_up % 13)):  #cards don't match suit or value
+            print "INVALID: Either suit or value must match the face-up card"
+            return False
+        else:
+            return True
 
     def executeSpecialMove(self, card):
-        """ Executes special cards. Returns true if opposing player's turn is skipped """
+        """ Executes special cards."""
         if (card == 11):  # card is the Queen of Spades, make opponent draw 5
             if self.currentPlayer == 0:  # if player is human
-                self.history.append((1, 11, 0, 5))
+                self.history.append((1, card, 0, 5))
+                self.draw(1, 5)
             else:  # if player is ai
-                self.history.append((0, 11, 0, 5))
-            return True
-        # elif card is number 2
-        elif((card - 10) % 13 == 0):  # card is Jack, make opponent skip turn
+                self.history.append((0, card, 0, 5))
+                self.draw(0, 5)
+        # elif card in [1, 14, 27, 40]: #card is 2
+        #     if self.currentPlayer == 0:  # if player is human
+        #         self.history.append((1, card, card/13, 2))
+        #         self.draw(1, 2)
+        #     else:  # if player is ai
+        #         self.history.append((0, card, card/13, 2))
+        #         self.draw(0, 2)
+        elif card in [10, 23, 36, 49]:  # card is Jack, make opponent skip turn
             if self.currentPlayer == 0:
-                self.history.append((1, card, self.history[-1][2], 0))
+                self.history.append((1, card, card/13, 0))
             else:
-                self.history.append((0, card, self.history[-1][2], 0))
-            return True
+                self.history.append((0, card, card/13, 0))
         else:
-            return False
+            if self.currentPlayer == 0:
+                self.currentPlayer = 1
+            else:
+                self.currentPlayer = 0
 
     def executeMove(self, move):
         """ Assumes player's move is valid and continues to execute the move """
         self.history.append(move)
         if self.currentPlayer == 0:
-            if(move[3] == 0): #no draw, card was played
+            if(move[3] == 0): #no draw; card was played
                 self.human_hand.remove(move[1])
+                self.executeSpecialMove(move[1])
             else:
                 self.draw(0, move[3])
-            if(self.executeSpecialMove(move[1])):  # checks if card is a special card & execute it if it is
-                self.currentPlayer = self.currentPlayer  # skip opposing player's turn
-            else:
                 self.currentPlayer = 1
         else:
-            if(move[3] == 0): #no draw, card was played
+            if(move[3] == 0): #no draw; card was played
                 self.computer_hand.remove(move[1])
+                self.executeSpecialMove(move[1])
             else:
                 self.draw(1, move[3])
-            if(self.executeSpecialMove(move[1])):  # checks if card is a special card & execute it if it is
-                self.currentPlayer = self.currentPlayer  # skip opposing player's turn
-            else:
                 self.currentPlayer = 0
 
     def move(self, partial_state):
@@ -110,8 +129,9 @@ class CrazyEights:
         """
         hand = partial_state[2]
         for card in hand:
-            if self.validMove(card):
-                return (1, card, card / 13, 0)
+            move = (1, card, card / 13, 0)
+            if self.validMove(move):
+                return move
         return (1, self.history[-1][1], self.history[-1][2], 1)
 
     def movePefectKnowedge(self, state):
