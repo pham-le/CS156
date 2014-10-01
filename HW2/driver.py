@@ -35,7 +35,7 @@ deck = ce.deck
 player_hand = ce.human_hand
 computer_hand = ce.computer_hand
 
-while ce.isGameOver():
+while not ce.isGameOver():
     print "Face up pile:", ce.history
     while True and ce.currentPlayer == 0:
         print "\nEnter your move (0, card you're playing, suit you're changing to, 0)"
