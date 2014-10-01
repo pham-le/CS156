@@ -31,10 +31,12 @@ else:
 ce = CrazyEights(turn)
 
 while not ce.isGameOver():
-    print "Face up pile:", ce.history
+    print "Game History:", ce.history
     while True and ce.currentPlayer == 0:
-        print "\nEnter your move (0, card you're playing, suit you're changing to, 0)"
+        print "Enter your move (0, card you're playing, suit you're changing to, 0)"
+        print "Face up card:", ce.history[-1][1]
         print "Your current hand:", ce.human_hand
+        print "Cards left in deck:", len(ce.deck)
 
         # input the human's move
         move = stringToMove(raw_input())
@@ -42,7 +44,6 @@ while not ce.isGameOver():
         if ce.validMove(move[1]):
             ce.executeMove(move)
             print "Your updated hand:", ce.human_hand
-            print "Computer's hand:", ce.computer_hand
             break
         else:
             print "Your move is invalid"

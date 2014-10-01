@@ -64,16 +64,16 @@ class CrazyEights:
         """ Executes special cards. Returns true if opposing player's turn is skipped """
         if (card == 11):  # card is the Queen of Spades, make opponent draw 5
             if self.currentPlayer == 0:  # if player is human
-                self.history.append((0, 11, 0, 5))
-            else:  # if player is ai
                 self.history.append((1, 11, 0, 5))
+            else:  # if player is ai
+                self.history.append((0, 11, 0, 5))
             return True
         # elif card is number 2
         elif((card - 10) % 13 == 0):  # card is Jack, make opponent skip turn
             if self.currentPlayer == 0:
-                self.history.append((0, card, self.history[-1][2], 0))
-            else:
                 self.history.append((1, card, self.history[-1][2], 0))
+            else:
+                self.history.append((0, card, self.history[-1][2], 0))
             return True
         else:
             return False
