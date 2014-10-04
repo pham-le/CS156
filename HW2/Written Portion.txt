@@ -1,0 +1,46 @@
+Andres Chorro 007340983
+Justing Tieu
+Jannette Pham-Le
+
+Homework 2:
+
+Find specific board setups for the 8 queens problem that satisfy the following criteria:
+
+1.  Beam search with two starting points will not give the same result as hillclibing with a single restart:
+
+	This will happen when the every node adjacent to the first starting has a greater cost than the cheapest 2 nodes of the second starting point, but the first starting point ultimately leads to a better position.  Hillclimbing with a restart will continue with the expensive board until it can't climb anymore, while beam search will immediately move to the seemingly "closer" board and not look at the board 1 after the first move.
+
+
+Queens are respresented with "QQ", spaces are represented by their cost (only relevant costs are filled):
+
+
+Board 1: cost: 8
+best move costs 4
+
+Nodes here are more expensive now, but hillclimbing will find a solution eventually, while beam search will ditch it and get stuck in board 2.
+
+## ## ## ## QQ QQ QQ QQ  
+## ## ## QQ ## ## ## ##
+## ## ## ## ## ## ## ##
+QQ ## ## ## ## ## ## ##
+## ## ## ## ## ## ## ##
+## QQ ## ## ## ## ## ##
+## ## ## ## 04 ## ## ##
+## ## QQ ## ## ## ## ##
+
+
+
+Board 2: cost: 4
+best moves cost 1
+
+This board is very "close" at first glance, but leads to a local minimum, and not a solution.  Beam search will move the first starting point to a node branching from this, and never find a solution.
+
+QQ 07 ## ## ## ## QQ QQ  
+04 06 ## ## QQ ## ## ## 
+04 QQ ## ## ## ## ## ##
+05 06 ## ## ## QQ ## ##
+03 07 QQ ## ## ## ## ##
+03 06 ## ## ## ## 01 ##
+05 06 ## QQ ## ## ## ##
+03 05 ## ## ## ## 02 ##
+
