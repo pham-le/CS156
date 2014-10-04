@@ -58,7 +58,7 @@ class CrazyEights:
         #partial_state = (face_up_card, suit, our_hand, history)
         if move[3] == 0: #player did not draw any cards
             other_hand = state[2][2]
-            partial_state = (move[1], move[2], state[1].remove(move(1)), state[2].append(move))
+            partial_state = (move[1], move[2], state[1].remove(move[1]), state[2].append(move))
             state = (state[0], other_hand, partial_state)
         elif move[3] > len(state[0]): #if num of cards drawn is larger than the amount in the deck
             cards = state[0][-1 * len(state[0]):]
