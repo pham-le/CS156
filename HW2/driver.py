@@ -31,25 +31,28 @@ else:
 ce = CrazyEights(turn)
 
 while not ce.isGameOver():
-    print "Game History:", ce.history
+    print "\n\nGame History:", ce.history
     while True and ce.currentPlayer == 0:
-        print "Enter your move (0, card you're playing, suit you're changing to, 0)"
+        print "Cards left in deck:", len(ce.deck)
+        print "Cards left in computer hand:", len(ce.computer_hand)
         print "Face up card:", ce.history[-1][1]
         print "Your current hand:", ce.human_hand
-        print "Cards left in deck:", len(ce.deck)
+        print "Enter your move (0, card you're playing, suit you're changing to, 0):"
+
 
         # input the human's move
         move = stringToMove(raw_input())
 
-        if ce.validMove(move[1]):
+        if ce.validMove(move):
             ce.executeMove(move)
             print "Your updated hand:", ce.human_hand
             break
         else:
             print "Your move is invalid"
-    # if player hand is empty, end game
-    if(len(ce.human_hand) == 0):
+
+    if ce.isGameOver(): #check for end after player's turn
         break
+
     if(ce.currentPlayer == 1):
         print "\nComputer's turn"
         # partial_state that is a tuple (face_up_card, suit, hand, history)
@@ -63,8 +66,5 @@ while not ce.isGameOver():
             break
         else:
             ce.executeMove(computer_move)
-        print("End of Computer's turn#")
-    # if computer hand is empty, end game
-    if(len(ce.computer_hand) == 0):
-        break
+        print("End of Computer's turn")
 print ce.getWinner()
