@@ -1,4 +1,14 @@
 #!/usr/bin/python
+
+"""
+CS 156 Intro to AI - 01
+Homework 2, 10/01/2014
+
+Andres Chorro - 007340983
+Jannette Pham-Le - 007855120
+Justin Tieu - 007789678
+"""
+
 import random
 
 class CrazyEights:
@@ -43,6 +53,25 @@ class CrazyEights:
 
     def result(self, state, move):
         """returns the resulting state after move has been applied to it"""
+        #state = (deck, other_hand, partial_state)
+        #move = (player_num, face_up_card, suit, number_of_cards)
+        #partial_state = (face_up_card, suit, our_hand, history)
+        if move[3] == 0: #player did not draw any cards
+            other_hand = state[2][2]
+            partial_state = (move[1], move[2], state[1].remove(move(1)), state[2].append(move))
+            state = (state[0], other_hand, partial_state)
+        elif move[3] > len(state[0]): #if num of cards drawn is larger than the amount in the deck
+            cards = state[0][-1 * len(state[0]):]
+            deck = []
+            other_hand = state[2][2]
+            partial_state = (move[1], move[2], state[1]+cards, state[2].append(move))
+            state = (deck, other_hand, partial_state)
+        else: #if player draws appropriate amount
+            cards = state[0][-1 * move[3]:]
+            deck = state[0][:-1 * move[3]]
+            other_hand = state[2][2]
+            partial_state = (move[1], move[2], state[1]+cards, state[2].append(move))
+            state = (deck, other_hand, partial_state)
         return state
 
     def game_over(self, state):

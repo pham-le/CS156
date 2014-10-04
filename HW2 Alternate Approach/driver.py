@@ -1,4 +1,14 @@
 #!/usr/bin/python
+
+"""
+CS 156 Intro to AI - 01
+Homework 2, 10/01/2014
+
+Andres Chorro - 007340983
+Jannette Pham-Le - 007855120
+Justin Tieu - 007789678
+"""
+
 import random
 from crazy_eights import CrazyEights
 
