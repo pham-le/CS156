@@ -36,3 +36,28 @@ class CrazyEights:
             partial_state = (face_up_card, suit, computer_hand, history)
             initial_state = (deck, human_hand, partial_state)
         return initial_state
+
+    def actions(self, partial_state):
+        """returns the set of moves that are playable in the state"""
+        return []
+
+    def result(self, state, move):
+        """returns the resulting state after move has been applied to it"""
+        return state
+
+    def game_over(self, state):
+        """returns true if the game is over in this state"""
+        #check if deck, opponent hand, or your hand is empty
+        return [] in [state[0], state[1], state[2][2]]
+
+    def utility(self, state, player):
+        return 0
+
+    def move_perfect_knowledge(state):
+        """Picks a move based on the state and the minimax algorithm with
+        alpha-beta pruning and the limiting hueristic: hand - opponent hand"""
+        return state
+
+
+
+#comment        
