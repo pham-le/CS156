@@ -35,7 +35,7 @@ else:
 while not game.game_over(current_state):
     while human_turn:
         printState(current_state)
-        actions = game.actions(current_state[2], current_state[1])
+        actions = game.actions(current_state[2])
         move = stringToMove(raw_input())
         if move not in actions:
             print "Invalid Move"
@@ -44,7 +44,7 @@ while not game.game_over(current_state):
             human_turn = not human_turn
     
     print "\nCOMPUTER TURN:"
-    print "COMPUTER OPTIONS:", current_state[2][]
+    print "COMPUTER HAND:", current_state[2][2]
     move = game.move_perfect_knowledge(current_state)
     print "COMPUTER MOVE:", move
     current_state = game.result(current_state, move)

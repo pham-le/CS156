@@ -27,7 +27,7 @@ class CrazyEights:
         face_up_card = deck.pop()
         suit = self.get_suit(face_up_card)
 
-        if starting_player == 0:
+        if starting_player is 0:
             history = [(1, face_up_card, suit, 0)]
             partial_state = (face_up_card, suit, human_hand, history)
             initial_state = (deck, computer_hand, partial_state)
@@ -38,37 +38,35 @@ class CrazyEights:
         return initial_state
 
     def actions(self, partial_state):
-        """returns the set of moves that are playable in the state.
-        human hand is only used for human turn, to insert the player's hand"""
+        """returns the set of moves that are playable in the state."""
         face_up_card, face_up_suit, hand, history = partial_state
         face_up_value = self.get_value(face_up_card)
- 
-        player = 0 if (history[-1][0] == 1) else 1 #the player who must play next 
+        player = abs(history[-1][0] - 1) #the player who's turn it is 
         actions = []
-        if len(history) > 1: #special cards don't apply on turn 1
-            if history[-1][3] == 0: #opponent didn't draw, so special cards apply
-                if face_up_card == 11: #queen of spades, can only draw 5
+        if len(history) > 1: #special cards only apply past turn 1
+            if history[-1][3] is 0: #opponent didn't draw, so their special cards apply
+                if face_up_card is 11: #queen of spades, can only draw 5
                     actions.append((player, face_up_card, face_up_suit, 5))
                     return actions
-                if face_up_value == 1: #2 is face-up
+                if face_up_value is 1: #2 is face-up
                     for card in hand:
-                        if self.get_value(card) == face_up_value: #you have a 2
+                        if self.get_value(card) is face_up_value: #you have a 2
                             actions.append((player, card, self.get_suit(card), 0))
                     two_counter = 1 #keep track of how much you must draw
                     while (two_counter < 5
                             and len(history) > (two_counter + 1) #don't want to check first faceup card
-                            and self.get_value(history[-(two_counter+1)][0]) == 1): #previous card is 2
+                            and self.get_value(history[-(two_counter + 1)][1]) is 1): #previous card is 2
                         two_counter = two_counter + 1
                     actions.append((player, face_up_card, face_up_suit, 2 * two_counter))
                     return actions
-                if (face_up_value == 10) and (history[-2][0] != face_up_card): #jack face up, and opponent wasn't skipped
+                if (face_up_value is 10) and (history[-2][1] != face_up_card): #jack face up, and opponent wasn't skipped
                     return actions #you can't play any moves
         for card in hand:
-            if self.get_value(card) == 7:
+            if self.get_value(card) is 7:
                 for i in range(4):
                     actions.append((player, card, i, 0))
-            elif (self.get_suit(card) == face_up_suit
-                    or self.get_value(card) == face_up_value):
+            elif (self.get_suit(card) is face_up_suit
+                    or self.get_value(card) is face_up_value):
                 actions.append((player, card, self.get_suit(card), 0))
         actions.append((player, face_up_card, face_up_suit, 1))
         return actions
@@ -91,7 +89,7 @@ class CrazyEights:
         else: #must draw
             if number_of_cards > len(deck): #don't allow over-draw
                 number_of_cards = len(deck)
-            if player_num == 0:
+            if player_num is 0:
                 human_hand = human_hand + deck[-number_of_cards:]
             else:
                 computer_hand = computer_hand + deck[-number_of_cards:]
