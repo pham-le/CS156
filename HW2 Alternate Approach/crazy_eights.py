@@ -52,7 +52,7 @@ class CrazyEights:
         """returns the set of moves that are playable in the state."""
         face_up_card, face_up_suit, hand, history = partial_state
         face_up_value = self.get_value(face_up_card)
-        player = abs(history[-1][0] - 1)  # the player who's turn it is
+        player = 0 if (history[-1][0] is 1) else 1 #the player who must play next 
         actions = []
         if len(history) > 1:  # special cards only apply past turn 1
             if history[-1][3] is 0:  # opponent didn't draw, so their special cards apply
@@ -85,7 +85,6 @@ class CrazyEights:
 
     def result(self, state, move):
         """returns the resulting state after move has been applied to it"""
-
         deck, other_hand, partial_state = state
         face_up_card, face_up_suit, our_hand, history = partial_state
         player_moved, played_card, played_suit, drawn_cards = move
@@ -94,14 +93,16 @@ class CrazyEights:
             return state
         elif drawn_cards is 0:  # player did not draw any cards
             our_hand.remove(played_card)
-            partial_state = (played_card, played_suit, other_hand, history.append(move))
+            history.append(move)
+            partial_state = (played_card, played_suit, other_hand, history)
             state = (deck, our_hand, partial_state)
         else:  # player drew cards
             if drawn_cards > len(deck):  # player drew more cards than in deck
                 drawn_cards = len(deck)
-            our_hand = deck[-1 * drawn_cards:]
+            our_hand = our_hand + deck[-1 * drawn_cards:]
             deck = deck[:-1 * drawn_cards]
-            partial_state = (played_card, played_suit, other_hand, history.append(move))
+            history.append(move)
+            partial_state = (played_card, played_suit, other_hand, history)
             state = (deck, our_hand, partial_state)
         return state
 
@@ -119,4 +120,7 @@ class CrazyEights:
     def move_perfect_knowledge(self, state):
         """Picks a move based on the state and the minimax algorithm with
         alpha-beta pruning and the limiting hueristic: hand - opponent hand"""
+        actions = self.actions(state[2])
+        if actions is []:
+            return 
         return self.actions(state[2])[0]

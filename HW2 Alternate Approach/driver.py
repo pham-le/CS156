@@ -24,13 +24,13 @@ def stringToMove(string):
 
 
 def printState(state):
-    deck, human_hand, partial_state = state
-    face_up_card, suit, computer_hand, history = partial_state
+    deck, opponent_hand, partial_state = state
+    face_up_card, suit, your_hand, history = partial_state
     print "\nCards in deck:", len(deck)
-    print "Cards in opponent hand", len(computer_hand)
+    print "Opponent hand:", opponent_hand
     print "History:", history
     print "Face up:", face_up_card
-    print "Your hand:", human_hand
+    print "Your hand:", your_hand
     print "Your options:", game.actions(partial_state)
 
 
@@ -49,7 +49,10 @@ while not game.game_over(current_state):
     while human_turn:
         printState(current_state)
         actions = game.actions(current_state[2])
+
         move = stringToMove(raw_input())
+        if actions is []:
+            move = None
         if move not in actions:
             print "Invalid Move"
         else:
@@ -57,7 +60,7 @@ while not game.game_over(current_state):
             human_turn = not human_turn
 
     print "\nCOMPUTER TURN:"
-    print "COMPUTER HAND:", current_state[2][2]
+    printState(current_state)
     move = game.move_perfect_knowledge(current_state)
     print "COMPUTER MOVE:", move
     current_state = game.result(current_state, move)
