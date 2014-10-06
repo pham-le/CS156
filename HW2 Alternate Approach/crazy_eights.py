@@ -1,14 +1,4 @@
 #!/usr/bin/python
-
-"""
-CS 156 Intro to AI - 01
-Homework 2, 10/01/2014
-
-Andres Chorro - 007340983
-Jannette Pham-Le - 007855120
-Justin Tieu - 007789678
-"""
-
 import random
 
 class CrazyEights:
@@ -48,44 +38,82 @@ class CrazyEights:
         return initial_state
 
     def actions(self, partial_state):
-        """returns the set of moves that are playable in the state"""
-        return []
+        """returns the set of moves that are playable in the state.
+        human hand is only used for human turn, to insert the player's hand"""
+        face_up_card, face_up_suit, hand, history = partial_state
+        face_up_value = self.get_value(face_up_card)
+ 
+        player = 0 if (history[-1][0] == 1) else 1 #the player who must play next 
+        actions = []
+        if len(history) > 1: #special cards don't apply on turn 1
+            if history[-1][3] == 0: #opponent didn't draw, so special cards apply
+                if face_up_card == 11: #queen of spades, can only draw 5
+                    actions.append((player, face_up_card, face_up_suit, 5))
+                    return actions
+                if face_up_value == 1: #2 is face-up
+                    for card in hand:
+                        if self.get_value(card) == face_up_value: #you have a 2
+                            actions.append((player, card, self.get_suit(card), 0))
+                    two_counter = 1 #keep track of how much you must draw
+                    while (two_counter < 5
+                            and len(history) > (two_counter + 1) #don't want to check first faceup card
+                            and self.get_value(history[-(two_counter+1)][0]) == 1): #previous card is 2
+                        two_counter = two_counter + 1
+                    actions.append((player, face_up_card, face_up_suit, 2 * two_counter))
+                    return actions
+                if (face_up_value == 10) and (history[-2][0] != face_up_card): #jack face up, and opponent wasn't skipped
+                    return actions #you can't play any moves
+        for card in hand:
+            if self.get_value(card) == 7:
+                for i in range(4):
+                    actions.append((player, card, i, 0))
+            elif (self.get_suit(card) == face_up_suit
+                    or self.get_value(card) == face_up_value):
+                actions.append((player, card, self.get_suit(card), 0))
+        actions.append((player, face_up_card, face_up_suit, 1))
+        return actions
 
     def result(self, state, move):
         """returns the resulting state after move has been applied to it"""
-        #state = (deck, other_hand, partial_state)
-        #move = (player_num, face_up_card, suit, number_of_cards)
-        #partial_state = (face_up_card, suit, our_hand, history)
-        if move[3] == 0: #player did not draw any cards
-            other_hand = state[2][2]
-            partial_state = (move[1], move[2], state[1].remove(move[1]), state[2].append(move))
-            state = (state[0], other_hand, partial_state)
-        elif move[3] > len(state[0]): #if num of cards drawn is larger than the amount in the deck
-            cards = state[0][-1 * len(state[0]):]
-            deck = []
-            other_hand = state[2][2]
-            partial_state = (move[1], move[2], state[1]+cards, state[2].append(move))
-            state = (deck, other_hand, partial_state)
-        else: #if player draws appropriate amount
-            cards = state[0][-1 * move[3]:]
-            deck = state[0][:-1 * move[3]]
-            other_hand = state[2][2]
-            partial_state = (move[1], move[2], state[1]+cards, state[2].append(move))
-            state = (deck, other_hand, partial_state)
-        return state
+        if move is None:
+            return state #player was skipped, state unchanged
+        deck, human_hand, partial_state = state
+        face_up_card, suit, computer_hand, history = partial_state
+        player_num, card, suit, number_of_cards = move
+        if number_of_cards is 0: #no cards drawn, regular play
+            if player_num is 0:
+                human_hand.remove(card)
+            else:
+                computer_hand.remove(card)
+            face_up_card = card
+            suit = self.get_suit(card)
+
+        else: #must draw
+            if number_of_cards > len(deck): #don't allow over-draw
+                number_of_cards = len(deck)
+            if player_num == 0:
+                human_hand = human_hand + deck[-number_of_cards:]
+            else:
+                computer_hand = computer_hand + deck[-number_of_cards:]
+            deck = deck[:-number_of_cards]
+        history.append(move)
+        return (deck, human_hand, (face_up_card, suit, computer_hand, history))
+
 
     def game_over(self, state):
         """returns true if the game is over in this state"""
         #check if deck, opponent hand, or your hand is empty
-        return [] in [state[0], state[1], state[2][2]]
+        deck, human_hand, partial_state = state
+        computer_hand = partial_state[2]
+        return [] in [deck, computer_hand, human_hand]
 
     def utility(self, state, player):
         return 0
 
-    def move_perfect_knowledge(state):
+    def move_perfect_knowledge(self, state):
         """Picks a move based on the state and the minimax algorithm with
         alpha-beta pruning and the limiting hueristic: hand - opponent hand"""
-        return state
+        return self.actions(state[2])[0]
 
 
 
