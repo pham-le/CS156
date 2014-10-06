@@ -53,7 +53,7 @@ while not game.game_over(current_state):
         move = stringToMove(raw_input())
         while move not in actions:
             print "Invalid Move"
-            move = stringToMove
+            move = stringToMove(raw_input())
         current_state = game.result(current_state, move)
         human_turn = not human_turn
     else:
@@ -65,6 +65,10 @@ while not game.game_over(current_state):
         human_turn = not human_turn
 
 printState(current_state)
+if game.utility(current_state, 0) is 1:
+    print "\nHUMAN WINS!"
+else:
+    print "\nCOMPUTER WINS!"
 # create variables that will be used to create the initial stat
 
 

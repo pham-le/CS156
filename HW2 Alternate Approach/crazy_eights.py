@@ -106,12 +106,34 @@ class CrazyEights:
     def game_over(self, state):
         """returns true if the game is over in this state"""
         # check if deck, opponent hand, or your hand is empty
-        deck, human_hand, partial_state = state
-        computer_hand = partial_state[2]
-        return [] in [deck, computer_hand, human_hand]
+        deck, your_hand, partial_state = state
+        opponent_hand = partial_state[2]
+        return [] in [deck, opponent_hand, your_hand]
 
     def utility(self, state, player):
-        return 0
+        """Returns the utility (0 for a loss, 1 for a win) of a final state for a designated player:
+        1 for computer, 0 for human"""
+        last_player = state[2][3][-1][0] # the player who made the last move
+        current_player = 0 if (last_player is 1) else 1
+
+        current_player_hand = state[2][3][2]
+        opponent_hand = state[1]
+
+        winner = -1
+        if len(current_player_hand) < len(opponent_hand):
+            winner = current_player
+        elif len(current_player_hand) > len(opponent_hand):
+            winner = last_player
+        else:
+            if min(current_player_hand) < min(opponent_hand):
+                winner = current_player
+            else:
+                winner = last_player
+        if player is winner:
+            return 1
+        else:
+            return 0
+
 
     def move_perfect_knowledge(self, state):
         """Picks a move based on the state and the minimax algorithm with
@@ -119,7 +141,7 @@ class CrazyEights:
         v = max_value(state, float(-inf), float(inf))
         actions = actions(state)
         for a in actions:
-            if utility(a):
+            if utilit:
                 return a
         
     def max_value(self, state, alpha, beta):
@@ -138,7 +160,11 @@ class CrazyEights:
             return utility(state, 1)
         v = float(inf)
         for a in actions(state):
-            return None
+            v = min(v, max_value(result(state, a), alpha, beta))
+            if v <= alpha:
+                return v
+            beta = min(beta, v)
+        return v
 
     def dumb_move(self, state):
         """pick the first option from the available moves"""
