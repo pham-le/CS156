@@ -126,3 +126,11 @@ class CrazyEights:
             return None
         else:
             return self.actions(state[2])[0]
+
+    def dumb_move(self, state):
+        """pick the first option from the available moves"""
+        actions = self.actions(state[2])
+        if len(actions) is 0:
+            return None
+        else:
+            return self.actions(state[2])[0]

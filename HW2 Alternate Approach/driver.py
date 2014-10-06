@@ -46,7 +46,7 @@ else:
     print "You are second"
 
 while not game.game_over(current_state):
-    while human_turn:
+    if human_turn:
         print "Human Turn:"
         printState(current_state)
         actions = game.actions(current_state[2])
@@ -54,18 +54,18 @@ while not game.game_over(current_state):
             move = None
         else:
             move = stringToMove(raw_input())
-        if move not in actions:
-            print "Invalid Move"
-        else:
-            current_state = game.result(current_state, move)
-            human_turn = not human_turn
-
-    print "\nCOMPUTER TURN:"
-    printState(current_state)
-    move = game.move_perfect_knowledge(current_state)
-    print "COMPUTER MOVE:", move
-    current_state = game.result(current_state, move)
-    human_turn = not human_turn
+            while move not in actions:
+                print "Invalid Move"
+                move = stringToMove
+        current_state = game.result(current_state, move)
+        human_turn = not human_turn
+    else:
+        print "\nCOMPUTER TURN:"
+        printState(current_state)
+        move = game.dumb_move(current_state)
+        print "COMPUTER MOVE:", move
+        current_state = game.result(current_state, move)
+        human_turn = not human_turn
 # create variables that will be used to create the initial stat
 
 
