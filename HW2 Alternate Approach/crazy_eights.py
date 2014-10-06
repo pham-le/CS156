@@ -122,5 +122,5 @@ class CrazyEights:
         alpha-beta pruning and the limiting hueristic: hand - opponent hand"""
         actions = self.actions(state[2])
         if actions is []:
-            return 
+            return None
         return self.actions(state[2])[0]
