@@ -10,6 +10,7 @@ Justin Tieu - 007789678
 """
 
 import random
+import sys
 
 
 class CrazyEights:
@@ -145,8 +146,8 @@ class CrazyEights:
                 return a
         
     def max_value(self, state, alpha, beta):
-        if self.game_over(state, 0):
-            return utility(state)
+        if self.game_over(state):
+            return utility(state, 1)
         v = float(-inf)
         for a in actions(state):
             v = max(v, min_value(result(state, a), alpha, beta))
@@ -169,3 +170,30 @@ class CrazyEights:
     def dumb_move(self, state):
         """pick the first option from the available moves"""
         return self.actions(state[2])[0]
+
+
+
+
+    #these have no alpha-beta pruning.
+
+    def minimax(self, state):
+        values = []
+        for move in self.actions(state[2]):
+            values.append(self.minimax_min(self.result(state, move)))
+        return max(values)[2]
+
+    def minimax_min(self, state):
+        if self.game_over(state):
+            return self.utility(state, 0)
+        v = 1000000000
+        for move in self.actions(state[2]):
+            v = min(v, self.minimax_max(self.result(state, move)))
+        return v
+
+    def minimax_max(self, state):
+        if self.game_over(state):
+            return self.utility(state, 0)
+        v = -1000000000
+        for move in self.actions(state[2]):
+            v = max(v, self.minimax_min(self.result(state, move)))
+        return v        

@@ -27,7 +27,7 @@ def printState(state):
     deck, opponent_hand, partial_state = state
     face_up_card, suit, your_hand, history = partial_state
     print "\nCards in deck:", len(deck)
-    print "Opponent hand:", opponent_hand
+    print "Opponent hand length:", len(opponent_hand)
     print "History:", history
     print "Face up:", face_up_card
     print "Your hand:", your_hand
@@ -58,8 +58,8 @@ while not game.game_over(current_state):
         human_turn = not human_turn
     else:
         print "\nCOMPUTER TURN:"
-        printState(current_state)
-        move = game.dumb_move(current_state)
+        print "COMPUTER OPTIONS:", game.actions(current_state[2])
+        move = game.minimax(current_state)
         print "COMPUTER MOVE:", move
         current_state = game.result(current_state, move)
         human_turn = not human_turn
