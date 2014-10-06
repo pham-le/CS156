@@ -47,12 +47,13 @@ else:
 
 while not game.game_over(current_state):
     while human_turn:
+        print "Human Turn:"
         printState(current_state)
         actions = game.actions(current_state[2])
-
-        move = stringToMove(raw_input())
-        if actions is []:
+        if len(actions) is 0:
             move = None
+        else:
+            move = stringToMove(raw_input())
         if move not in actions:
             print "Invalid Move"
         else:

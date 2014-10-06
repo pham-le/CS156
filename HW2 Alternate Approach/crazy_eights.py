@@ -85,13 +85,14 @@ class CrazyEights:
 
     def result(self, state, move):
         """returns the resulting state after move has been applied to it"""
+        if move is None:
+            return state #if you were skipped
         deck, other_hand, partial_state = state
         face_up_card, face_up_suit, our_hand, history = partial_state
         player_moved, played_card, played_suit, drawn_cards = move
 
-        if move is None:
-            return state
-        elif drawn_cards is 0:  # player did not draw any cards
+        
+        if drawn_cards is 0:  # player did not draw any cards
             our_hand.remove(played_card)
             history.append(move)
             partial_state = (played_card, played_suit, other_hand, history)
@@ -121,6 +122,7 @@ class CrazyEights:
         """Picks a move based on the state and the minimax algorithm with
         alpha-beta pruning and the limiting hueristic: hand - opponent hand"""
         actions = self.actions(state[2])
-        if actions is []:
+        if len(actions) is 0:
             return None
-        return self.actions(state[2])[0]
+        else:
+            return self.actions(state[2])[0]
