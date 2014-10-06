@@ -121,11 +121,28 @@ class CrazyEights:
     def move_perfect_knowledge(self, state):
         """Picks a move based on the state and the minimax algorithm with
         alpha-beta pruning and the limiting hueristic: hand - opponent hand"""
-        actions = self.actions(state[2])
-        if len(actions) is 0:
-            return None
-        else:
-            return self.actions(state[2])[0]
+        v = max_value(state, float(-inf), float(inf))
+        actions = actions(state)
+        for a in actions:
+            if utility(a)
+        return 
+        
+    def max_value(self, state, alpha, beta):
+        if self.game_over(state, 0):
+            return utility(state)
+        v = float(-inf)
+        for a in actions(state):
+            v = max(v, min_value(result(state, a), alpha, beta))
+            if v >= beta:
+                return v
+            alpha = max(alpha, v)
+        return v
+
+    def min_value(self, state, alpha, beta):
+        if self.game_over(state):
+            return utility(state, 1)
+        v = float(inf)
+        for a in actions(state)
 
     def dumb_move(self, state):
         """pick the first option from the available moves"""
