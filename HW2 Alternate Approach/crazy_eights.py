@@ -72,7 +72,8 @@ class CrazyEights:
                     return actions
                 if (face_up_value is 10) and (
                             history[-2][1] != face_up_card):  #jack face up, and opponent wasn't skipped
-                    return actions  #you can't play any moves
+                    actions.append((player, face_up_card, face_up_suit, 0))
+                    return actions #you must do nothing
         for card in hand:
             if self.get_value(card) is 7:
                 for i in range(4):
@@ -85,26 +86,20 @@ class CrazyEights:
 
     def result(self, state, move):
         """returns the resulting state after move has been applied to it"""
-        if move is None:
-            return state #if you were skipped
         deck, other_hand, partial_state = state
         face_up_card, face_up_suit, our_hand, history = partial_state
         player_moved, played_card, played_suit, drawn_cards = move
 
-        
-        if drawn_cards is 0:  # player did not draw any cards
-            our_hand.remove(played_card)
-            history.append(move)
-            partial_state = (played_card, played_suit, other_hand, history)
-            state = (deck, our_hand, partial_state)
-        else:  # player drew cards
+        if drawn_cards is not 0:  # player drew cards
             if drawn_cards > len(deck):  # player drew more cards than in deck
                 drawn_cards = len(deck)
             our_hand = our_hand + deck[-1 * drawn_cards:]
             deck = deck[:-1 * drawn_cards]
-            history.append(move)
-            partial_state = (played_card, played_suit, other_hand, history)
-            state = (deck, our_hand, partial_state)
+        elif played_card is not face_up_card: #player was not skipped
+            our_hand.remove(played_card)
+        history.append(move)
+        partial_state = (played_card, played_suit, other_hand, history)
+        state = (deck, our_hand, partial_state)
         return state
 
 
@@ -124,8 +119,8 @@ class CrazyEights:
         v = max_value(state, float(-inf), float(inf))
         actions = actions(state)
         for a in actions:
-            if utility(a)
-        return 
+            if utility(a):
+                return a
         
     def max_value(self, state, alpha, beta):
         if self.game_over(state, 0):
@@ -142,12 +137,9 @@ class CrazyEights:
         if self.game_over(state):
             return utility(state, 1)
         v = float(inf)
-        for a in actions(state)
+        for a in actions(state):
+            return None
 
     def dumb_move(self, state):
         """pick the first option from the available moves"""
-        actions = self.actions(state[2])
-        if len(actions) is 0:
-            return None
-        else:
-            return self.actions(state[2])[0]
+        return self.actions(state[2])[0]
