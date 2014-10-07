@@ -10,8 +10,7 @@ Justin Tieu - 007789678
 """
 
 import random
-import sys
-
+import copy
 
 class CrazyEights:
     """Contains fuctions that can be used to run a game of Crazy Eights"""
@@ -49,8 +48,9 @@ class CrazyEights:
             initial_state = (deck, human_hand, partial_state)
         return initial_state
 
-    def actions(self, partial_state):
+    def actions(self, original_partial_state):
         """returns the set of moves that are playable in the state."""
+        partial_state = copy.deepcopy(original_partial_state)
         face_up_card, face_up_suit, hand, history = partial_state
         face_up_value = self.get_value(face_up_card)
         player = 0 if (history[-1][0] is 1) else 1 #the player who must play next 
@@ -85,8 +85,10 @@ class CrazyEights:
         actions.append((player, face_up_card, face_up_suit, 1))
         return actions
 
-    def result(self, state, move):
+    def result(self, original_state, original_move):
         """returns the resulting state after move has been applied to it"""
+        state = copy.deepcopy(original_state)
+        move = copy.deepcopy(original_move)
         deck, other_hand, partial_state = state
         face_up_card, face_up_suit, our_hand, history = partial_state
         player_moved, played_card, played_suit, drawn_cards = move
@@ -107,39 +109,41 @@ class CrazyEights:
     def game_over(self, state):
         """returns true if the game is over in this state"""
         # check if deck, opponent hand, or your hand is empty
-        deck, your_hand, partial_state = state
-        opponent_hand = partial_state[2]
+        deck, opponent_hand, partial_state = state
+        your_hand = partial_state[2]
         return [] in [deck, opponent_hand, your_hand]
 
     def utility(self, state, player):
         """Returns the utility (0 for a loss, 1 for a win) of a final state for a designated player:
         1 for computer, 0 for human"""
-        last_player = state[2][3][-1][0] # the player who made the last move
+        
+        last_player = state[2][3][-1][0]
         current_player = 0 if (last_player is 1) else 1
-
-        current_player_hand = state[2][3][2]
         opponent_hand = state[1]
-
+        current_player_hand = state[2][2]
         winner = -1
-        if len(current_player_hand) < len(opponent_hand):
+        if len(opponent_hand) > len(current_player_hand):
             winner = current_player
-        elif len(current_player_hand) > len(opponent_hand):
+        elif len(opponent_hand) < len(current_player_hand):
+            winner = last_player
+        elif min(opponent_hand) < min(current_player_hand):
             winner = last_player
         else:
-            if min(current_player_hand) < min(opponent_hand):
-                winner = current_player
-            else:
-                winner = last_player
+            winner = current_player
         if player is winner:
             return 1
         else:
             return 0
 
+    def evaluate(self, state):
+        opponent_hand = state[1]
+        your_hand = state[2][2]
+        return len(opponent_hand) - len(your_hand)
 
     def move_perfect_knowledge(self, state):
         """Picks a move based on the state and the minimax algorithm with
         alpha-beta pruning and the limiting hueristic: hand - opponent hand"""
-        v = max_value(state, float(-inf), float(inf))
+        v = max_value(state, -10000, 10000)
         actions = actions(state)
         for a in actions:
             if utilit:
@@ -177,23 +181,30 @@ class CrazyEights:
     #these have no alpha-beta pruning.
 
     def minimax(self, state):
+        d = 0
         values = [] #list of (value, move) tuples
         for move in self.actions(state[2]):
-            values.append((self.minimax_min(self.result(state, move)), move))
+            values.append((self.minimax_min(self.result(state, move), d), move))
         return max(values)[1]
 
-    def minimax_min(self, state):
+    def minimax_min(self, state, d):
         if self.game_over(state):
             return self.utility(state, 1)
+        if d > 3:
+            return self.evaluate(state)
         v = 100000
         for move in self.actions(state[2]):
-            v = min(v, self.minimax_max(self.result(state, move)))
+            statecopy = copy.deepcopy(state)
+            v = min(v, self.minimax_max(self.result(statecopy, move), d + 1))
         return v
 
-    def minimax_max(self, state):
+    def minimax_max(self, state, d):
         if self.game_over(state):
             return self.utility(state, 1)
+        if d > 3:
+            return self.evaluate(state)
         v = 100000
         for move in self.actions(state[2]):
-            v = max(v, self.minimax_min(self.result(state, move)))
+            statecopy = copy.deepcopy(state)
+            v = max(v, self.minimax_min(self.result(statecopy, move), d + 1))
         return v        

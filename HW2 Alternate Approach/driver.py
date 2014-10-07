@@ -58,12 +58,13 @@ while not game.game_over(current_state):
         human_turn = not human_turn
     else:
         print "\nCOMPUTER TURN:"
-        print "COMPUTER OPTIONS:", game.actions(current_state[2])
-        move = game.minimax(current_state)
+        printState(current_state)
+        move = game.dumb_move(current_state)
         print "COMPUTER MOVE:", move
         current_state = game.result(current_state, move)
         human_turn = not human_turn
 
+print game.utility(current_state, 0)
 if game.utility(current_state, 0) is 1:
     print "\nHUMAN WINS!"
 else:
