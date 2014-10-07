@@ -64,7 +64,6 @@ while not game.game_over(current_state):
         current_state = game.result(current_state, move)
         human_turn = not human_turn
 
-printState(current_state)
 if game.utility(current_state, 0) is 1:
     print "\nHUMAN WINS!"
 else:

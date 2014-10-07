@@ -177,23 +177,23 @@ class CrazyEights:
     #these have no alpha-beta pruning.
 
     def minimax(self, state):
-        values = []
+        values = [] #list of (value, move) tuples
         for move in self.actions(state[2]):
-            values.append(self.minimax_min(self.result(state, move)))
-        return max(values)[2]
+            values.append((self.minimax_min(self.result(state, move)), move))
+        return max(values)[1]
 
     def minimax_min(self, state):
         if self.game_over(state):
-            return self.utility(state, 0)
-        v = 1000000000
+            return self.utility(state, 1)
+        v = 100000
         for move in self.actions(state[2]):
             v = min(v, self.minimax_max(self.result(state, move)))
         return v
 
     def minimax_max(self, state):
         if self.game_over(state):
-            return self.utility(state, 0)
-        v = -1000000000
+            return self.utility(state, 1)
+        v = 100000
         for move in self.actions(state[2]):
             v = max(v, self.minimax_min(self.result(state, move)))
         return v        
