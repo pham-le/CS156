@@ -44,3 +44,10 @@ QQ 07 ## ## ## ## QQ QQ
 05 06 ## QQ ## ## ## ##
 03 05 ## ## ## ## 02 ##
 
+
+
+
+
+Part 2:
+	We should expect to solution to the 8-queens problem to be about 15 moves, given we will have to shift to a worse state a few times.
+	The schedule could be schedule(t) = .2(t-10)^2.  This gives us T = 0 by the tenth move, where local maxima will be passed, as all 8 queens have been moved, and at least 2 backwards moves have been made.
