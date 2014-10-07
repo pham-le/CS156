@@ -2,7 +2,7 @@
 
 """
 CS 156 Intro to AI - 01
-Homework 2, 10/01/2014
+Homework 2, 10/06/2014
 
 Andres Chorro - 007340983
 Jannette Pham-Le - 007855120
@@ -67,7 +67,8 @@ class CrazyEights:
                     two_counter = 1  #keep track of how much you must draw
                     while (two_counter < 5
                            and len(history) > (two_counter + 1)  #don't want to check first faceup card
-                           and self.get_value(history[-(two_counter + 1)][1]) is 1):  #previous card is 2
+                           and self.get_value(history[-(two_counter + 1)][1]) is 1
+                           and history[-(two_counter + 1)][3] is 0):  #previous card is 2
                         two_counter = two_counter + 1
                     actions.append((player, face_up_card, face_up_suit, 2 * two_counter))
                     return actions
@@ -140,71 +141,69 @@ class CrazyEights:
         your_hand = state[2][2]
         return len(opponent_hand) - len(your_hand)
 
-    def move_perfect_knowledge(self, state):
-        """Picks a move based on the state and the minimax algorithm with
-        alpha-beta pruning and the limiting hueristic: hand - opponent hand"""
-        v = max_value(state, -10000, 10000)
-        actions = actions(state)
-        for a in actions:
-            if utilit:
-                return a
+    # def alpha(self, state):
+    #     """Picks a move based on the state and the minimax algorithm with
+    #     alpha-beta pruning and the limiting hueristic: hand - opponent hand"""
+    #     v = max_value(state, -10000, 10000)
+    #     actions = actions(state)
+    #     for a in actions:
+    #         if utilit:
+    #             return a
         
-    def max_value(self, state, alpha, beta):
-        if self.game_over(state):
-            return utility(state, 1)
-        v = float(-inf)
-        for a in actions(state):
-            v = max(v, min_value(result(state, a), alpha, beta))
-            if v >= beta:
-                return v
-            alpha = max(alpha, v)
-        return v
+    # def max_value(self, state, alpha, beta):
+    #     if self.game_over(state):
+    #         return utility(state, 1)
+    #     v = float(-inf)
+    #     for a in actions(state):
+    #         v = max(v, min_value(result(state, a), alpha, beta))
+    #         if v >= beta:
+    #             return v
+    #         alpha = max(alpha, v)
+    #     return v
 
-    def min_value(self, state, alpha, beta):
-        if self.game_over(state):
-            return utility(state, 1)
-        v = float(inf)
-        for a in actions(state):
-            v = min(v, max_value(result(state, a), alpha, beta))
-            if v <= alpha:
-                return v
-            beta = min(beta, v)
-        return v
+    # def min_value(self, state, alpha, beta):
+    #     if self.game_over(state):
+    #         return utility(state, 1)
+    #     v = float(inf)
+    #     for a in actions(state):
+    #         v = min(v, max_value(result(state, a), alpha, beta))
+    #         if v <= alpha:
+    #             return v
+    #         beta = min(beta, v)
+    #     return v
 
-    def dumb_move(self, state):
-        """pick the first option from the available moves"""
-        return self.actions(state[2])[0]
+    # def dumb_move(self, state):
+    #     """pick the first option from the available moves"""
+    #     return self.actions(state[2])[0]
 
 
 
 
     #these have no alpha-beta pruning.
 
-    def minimax(self, state):
+    def move_perfect_knowledge(self, state):
         d = 0
         values = [] #list of (value, move) tuples
         for move in self.actions(state[2]):
-            values.append((self.minimax_min(self.result(state, move), d), move))
+            values.append((self.min_value(self.result(state, move), d), move))
         return max(values)[1]
 
-    def minimax_min(self, state, d):
+    def min_value(self, state, d):
         if self.game_over(state):
             return self.utility(state, 1)
         if d > 3:
             return self.evaluate(state)
         v = 100000
         for move in self.actions(state[2]):
-            statecopy = copy.deepcopy(state)
-            v = min(v, self.minimax_max(self.result(statecopy, move), d + 1))
+            v = min(v, self.max_value(self.result(state, move), d + 1))
         return v
 
-    def minimax_max(self, state, d):
+    def max_value(self, state, d):
         if self.game_over(state):
             return self.utility(state, 1)
         if d > 3:
             return self.evaluate(state)
         v = 100000
         for move in self.actions(state[2]):
-            statecopy = copy.deepcopy(state)
-            v = max(v, self.minimax_min(self.result(statecopy, move), d + 1))
-        return v        
+            v = max(v, self.min_value(self.result(state, move), d + 1))
+        return v

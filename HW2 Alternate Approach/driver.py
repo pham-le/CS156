@@ -2,7 +2,7 @@
 
 """
 CS 156 Intro to AI - 01
-Homework 2, 10/01/2014
+Homework 2, 10/06/2014
 
 Andres Chorro - 007340983
 Jannette Pham-Le - 007855120
@@ -59,7 +59,7 @@ while not game.game_over(current_state):
     else:
         print "\nCOMPUTER TURN:"
         printState(current_state)
-        move = game.dumb_move(current_state)
+        move = game.move_perfect_knowledge(current_state)
         print "COMPUTER MOVE:", move
         current_state = game.result(current_state, move)
         human_turn = not human_turn
