@@ -59,6 +59,7 @@ while not game.game_over(current_state):
     else:
         print "\nCOMPUTER TURN:"
         printState(current_state)
+        # move = game.move(current_state[2])
         move = game.move_perfect_knowledge(current_state)
         print "COMPUTER MOVE:", move
         current_state = game.result(current_state, move)

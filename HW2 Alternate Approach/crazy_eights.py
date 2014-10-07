@@ -141,13 +141,31 @@ class CrazyEights:
         your_hand = state[2][2]
         return len(opponent_hand) - len(your_hand)
 
+    # def move(self, partial_state):
+    #     deck = range(52) 
+    #     deck = [card for card in deck if card not in (partial_state[2] + partial_state[3])]
+    #     list_of_moves = []
+    #     for x in range(0, 100):
+    #         random.shuffle(deck)
+    #         state = (deck, partial_state[2], partial_state)
+    #         list_of_moves.append(self.move_perfect_knowledge(state))
+        
+    #     numMax = 0
+    #     maxitem = None
+    #     for x in set(l):
+    #         count =  l.count(x)
+    #     if count > numMax:
+    #         numMax = count
+    #         maxitem = x
+    #     return maxitem
+
     # def alpha(self, state):
     #     """Picks a move based on the state and the minimax algorithm with
     #     alpha-beta pruning and the limiting hueristic: hand - opponent hand"""
     #     v = max_value(state, -10000, 10000)
     #     actions = actions(state)
     #     for a in actions:
-    #         if utilit:
+    #         if v in a:
     #             return a
         
     # def max_value(self, state, alpha, beta):
@@ -177,9 +195,10 @@ class CrazyEights:
     #     return self.actions(state[2])[0]
 
 
-
-
     #these have no alpha-beta pruning.
+
+    def move(self, state):
+        return move_perfect_knowledge(state)
 
     def move_perfect_knowledge(self, state):
         d = 0
