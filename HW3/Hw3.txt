@@ -1,0 +1,13 @@
+Andres Chorro		- 007340983
+Jannette Pham-Le	- 007855120
+Justin Tieu			- 007789678
+
+Homework 3:
+
+1. Suppose we have a two person game. In a given ply, a player can make one of three moves. The value of a move for a player can be encoded in three bits, one for sign, and two to encode a number 1-4. We use the variable Vm1,...,mi,b to denote the bth bit of the value of the sequence of moves m1,...mi to MAX. Suppose a game ends after 4 plys. Express as three propositional formulas the backed up minimax value of move 1, V1,b for each bit b, in terms of the variables V1,m2,m3,m4,b. Convert these formulas to CNF.
+
+
+2. The pigeonhole principle PHPn+1n says any function from n+1 pigeons into n holes must result in two pigeons in the same hole. Let Pi,j be a variable expressing that pigeon i gets mapped to hole j. Consider the n=3 case. Express the following as propositional formulas:
+Every i gets mapped to some j.
+Some j is mapped to by i and i′ where i≠i′.
+The conjunction of these two statements is a propositional formula for PHP43. Convert ¬PHP43 to clausal form and give a resolution refutation for this statement. Finally, trace the execution of DPLL on this formula.
