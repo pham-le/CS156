@@ -1,0 +1,3 @@
+var1 lt var2
+
+var2 eq 6

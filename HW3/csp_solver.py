@@ -23,7 +23,7 @@ def readFile(filename):
     variables = []
     for line in f:
         if line != '\n':
-            variables.append(line[:-1])
+            variables.append(line.rstrip('\n'))
     f.close()
     return variables
 
