@@ -11,31 +11,47 @@ Justin Tieu - 007789678
 
 import sys
 
-
+RELATIONS = ['eq', 'ne', 'lt', 'gt']
 def constraintsFromFile(filename):
     """
-    Appends all lines in a file into a list.
+    Takes the lines from the problem file and returns a list of tuples representing the constraints in
+    tuple form: (variable1, rel, variable or number).
 
     :param filename: name of file
-    :return: list containing all lines in the file
+    :return: list containing the constraints in the file
     """
     f = open(filename)
     constraints = []
     for line in f:
         if line != '\n':
             c = line.rstrip('\n').split() #c is a list with each word in the line
+            if len(c) is not 3:
+                print "ERROR: constraints must be 3 words long:"
+                print c, "doesn't have 3 words"
+                return []
+            if c[1] not in RELATIONS:
+                print "ERROR: second word must be a relation"
+                print c[1], "is not a valid relation"
+                return []
             if c[2].isdigit(): #change the third value to int if it is one.
                 c[2] = int(c[2])
-            constraints.append(tuple(c)) #turns the list to a tuple, add it to the list
+            constraints.append(tuple(c)) #turns the list to a tuple, add it to the list of constraints
     f.close()
     return constraints
 
 def getInitialDomain(constraints):
     """Given a list of constraints, returns a list of integers from 0 to max(D, V), 
-    where D is the number of distinct variables and V is the max integer in a constaint"""
-    d = 0
-    v = 0
-    #for c in constraints
+    where D is the number of distinct variables and V is the max integer in a constraint"""
+    v = 0 #represents highest integer value in any constraint
+    variableSet = set() #set of variables in the problem
+    for c in constraints:
+        variableSet.add(c[0])
+        if type(c[2]) is int:
+            v = max(v, c[2])
+        else:
+            variableSet.add(c[2])
+    d = len(variableSet)
+    return range(max(d, v) + 1)
 
 
 if len(sys.argv) == 3:
@@ -46,7 +62,9 @@ else:
     print "python csp_solver.py problem_filename use_forward_check_flag"
 
 # test to print the fucking file
-print constraintsFromFile(problem_filename)
+constraints = constraintsFromFile(problem_filename)
+print constraints
+print "initial domain:", getInitialDomain(constraints)
 
 # for line in readFile(problem_filename):
 #     print "".join(line)
