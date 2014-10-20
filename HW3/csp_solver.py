@@ -12,7 +12,7 @@ Justin Tieu - 007789678
 import sys
 
 
-def readFile(filename):
+def constraintsFromFile(filename):
     """
     Appends all lines in a file into a list.
 
@@ -20,12 +20,22 @@ def readFile(filename):
     :return: list containing all lines in the file
     """
     f = open(filename)
-    variables = []
+    constraints = []
     for line in f:
         if line != '\n':
-            variables.append(line.rstrip('\n'))
+            c = line.rstrip('\n').split() #c is a list with each word in the line
+            if c[2].isdigit(): #change the third value to int if it is one.
+                c[2] = int(c[2])
+            constraints.append(tuple(c)) #turns the list to a tuple, add it to the list
     f.close()
-    return variables
+    return constraints
+
+def getInitialDomain(constraints):
+    """Given a list of constraints, returns a list of integers from 0 to max(D, V), 
+    where D is the number of distinct variables and V is the max integer in a constaint"""
+    d = 0
+    v = 0
+    #for c in constraints
 
 
 if len(sys.argv) == 3:
@@ -36,6 +46,7 @@ else:
     print "python csp_solver.py problem_filename use_forward_check_flag"
 
 # test to print the fucking file
-print readFile(problem_filename)
+print constraintsFromFile(problem_filename)
+
 # for line in readFile(problem_filename):
 #     print "".join(line)
