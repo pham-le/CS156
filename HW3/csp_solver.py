@@ -65,10 +65,35 @@ else:
     print "Invalid input. Please use the format:"
     print "python csp_solver.py problem_filename use_forward_check_flag"
 
-# test to print the fucking file
-constraints = constraintsFromFile(problem_filename)
-domains = getInitialDomains(constraints)
-print domains
+constraints = constraintsFromFile(problem_filename) #list of triples in the form: (var, rel, var or num)
+domains = getInitialDomains(constraints) #map from variables to domain
+assignment = {} #map from one variable to one value (the result)
 
-# for line in readFile(problem_filename):
-#     print "".join(line)
+#constraints method experimental for now.
+def constraintFunction(A, a, B, b):
+    """returns true if neighbors A, B satisfy the constraint when they have values A=a, B=b"""
+    for c in constraints:
+        if c[0] == A:
+            if type(c[2]) is str:
+                if c[1] == "eq":
+                    return a == c[2]
+                if c[1] == "ne":
+                    return a != c[2]
+                if c[1] == "lt":
+                    return a < c[2]
+                if c[1] == "gt":
+                    return a > c[2]
+            elif c[2] == B:
+                if c[1] == "eq":
+                    return a == b
+                if c[1] == "ne":
+                    return a != b
+                if c[1] == "lt":
+                    return a < b
+                if c[1] == "gt":
+                    return a > b
+    return true
+
+###------Test Statements Below THIS LINE-------###
+print domains
+print constraintFunction('NT', 2, 'Q', 2)
