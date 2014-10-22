@@ -11,7 +11,6 @@ Justin Tieu - 007789678
 
 import sys
 
-RELATIONS = ['eq', 'ne', 'lt', 'gt']
 def constraintsFromFile(filename):
     """
     Takes the lines from the problem file and returns a list of tuples representing the constraints in
@@ -29,7 +28,7 @@ def constraintsFromFile(filename):
                 print "ERROR: constraints must be 3 words long:"
                 print c, "doesn't have 3 words"
                 return []
-            if c[1] not in RELATIONS:
+            if c[1] not in ['eq', 'ne', 'lt', 'gt']:
                 print "ERROR: second word must be a relation"
                 print c[1], "is not a valid relation"
                 return []
