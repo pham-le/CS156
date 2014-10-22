@@ -39,9 +39,9 @@ def constraintsFromFile(filename):
     f.close()
     return constraints
 
-def getInitialDomain(constraints):
-    """Given a list of constraints, returns a list of integers from 0 to max(D, V), 
-    where D is the number of distinct variables and V is the max integer in a constraint"""
+def getInitialDomains(constraints):
+    """Given a list of constraints, returns a dictionary that maps variables to lists of integers from 0 to max(D, V), 
+    where D is the number of distinct variables and V is the max integer in a constraint."""
     v = 0 #represents highest integer value in any constraint
     variableSet = set() #set of variables in the problem
     for c in constraints:
@@ -51,10 +51,14 @@ def getInitialDomain(constraints):
         else:
             variableSet.add(c[2])
     d = len(variableSet)
-    return range(max(d, v) + 1)
+    global_domain = range(max(d, v))
+    domains = {}
+    for variable in variableSet:
+        domains[variable] = global_domain
+    return domains
 
 
-if len(sys.argv) == 3:
+if len(sys.argv) is 3:
     problem_filename = sys.argv[1]
     use_forward_check_flag = sys.argv[2]
 else:
@@ -63,8 +67,8 @@ else:
 
 # test to print the fucking file
 constraints = constraintsFromFile(problem_filename)
-print constraints
-print "initial domain:", getInitialDomain(constraints)
+domains = getInitialDomains(constraints)
+print domains
 
 # for line in readFile(problem_filename):
 #     print "".join(line)

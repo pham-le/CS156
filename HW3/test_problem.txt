@@ -1,3 +1,6 @@
 var1 lt var2
 andres gt var2
-var2 eq chorro
+
+
+
+var2 eq 9
