@@ -13,9 +13,8 @@ import sys
 
 def constraintsFromFile(filename):
     """
-    Takes the lines from the problem file and returns a list of tuples representing the constraints in
-    tuple form: (variable1, rel, variable or number).
-
+    Takes the lines from the problem file and returns a list of tuples representing the constraints in tuple form:
+    (variable1, rel, variable or number).
     :param filename: name of file
     :return: list containing the constraints in the file
     """
@@ -39,8 +38,12 @@ def constraintsFromFile(filename):
     return constraints
 
 def getInitialDomains(constraints):
-    """Given a list of constraints, returns a dictionary that maps variables to lists of integers from 0 to max(D, V), 
-    where D is the number of distinct variables and V is the max integer in a constraint."""
+    """
+    Given a list of constraints, returns a dictionary that maps variables to lists of integers from 0 to max(D, V),
+    where D is the number of distinct variables and V is the max integer in a constraint.
+    :param constraints: list of original constraints
+    :return: a dictionary
+    """
     v = 0 #represents highest integer value in any constraint
     variableSet = set() #set of variables in the problem
     for c in constraints:
@@ -56,6 +59,46 @@ def getInitialDomains(constraints):
         domains[variable] = global_domain
     return domains
 
+#constraints method experimental for now.
+def constraintFunction(A, a, B, b):
+    """
+    Returns true if neighbors A, B satisfy the constraint when they have values A=a, B=b.
+    :param A: name of Neighbor A
+    :param a: value of Neighbor A
+    :param B: name of Neighbor B
+    :param b: value of Neighbor B
+    :return: true if assignment satisfies the constraints
+    """
+    for c in constraints:
+        if c[0] == A:
+            if type(c[2]) is int:
+                if c[1] == "eq":
+                    if a != c[2]:
+                        return False
+                elif c[1] == "ne":
+                    if a == c[2]:
+                        return False
+                elif c[1] == "lt":
+                    if a >= c[2]:
+                        return False
+                elif c[1] == "gt":
+                    if a <= c[2]:
+                        return False
+            elif c[2] == B:
+                if c[1] == "eq":
+                    if a != b:
+                        return False
+                if c[1] == "ne":
+                    if a == b:
+                        return False
+                if c[1] == "lt":
+                    if a >= b:
+                        return False
+                if c[1] == "gt":
+                    if a <= b:
+                        return False
+    return True
+
 
 if len(sys.argv) is 3:
     problem_filename = sys.argv[1]
@@ -68,31 +111,6 @@ constraints = constraintsFromFile(problem_filename) #list of triples in the form
 domains = getInitialDomains(constraints) #map from variables to domain
 assignment = {} #map from one variable to one value (the result)
 
-#constraints method experimental for now.
-def constraintFunction(A, a, B, b):
-    """returns true if neighbors A, B satisfy the constraint when they have values A=a, B=b"""
-    for c in constraints:
-        if c[0] == A:
-            if type(c[2]) is str:
-                if c[1] == "eq":
-                    return a == c[2]
-                if c[1] == "ne":
-                    return a != c[2]
-                if c[1] == "lt":
-                    return a < c[2]
-                if c[1] == "gt":
-                    return a > c[2]
-            elif c[2] == B:
-                if c[1] == "eq":
-                    return a == b
-                if c[1] == "ne":
-                    return a != b
-                if c[1] == "lt":
-                    return a < b
-                if c[1] == "gt":
-                    return a > b
-    return true
-
 ###------Test Statements Below THIS LINE-------###
 print domains
-print constraintFunction('NT', 2, 'Q', 2)
+print constraintFunction('NT', 2, 'Q', 7)
