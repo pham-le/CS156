@@ -103,29 +103,29 @@ def constraintFunction(A, a, B, b):
     return True
 
 
-def Backtracking_Search(csp):  # returns a solution, or a failure
-    return Backtrack({}, csp)
+def Backtracking_Search():  # returns a solution, or a failure
+    return Backtrack({})
 
 
-def Backtrack(assignment, csp):  # returns a solution, or failure
+def Backtrack(assignment):  # returns a solution, or failure
     if len(assignment) is len(domains):  # all variables are assigned
         return assignment
 
     """ this gets the first unassigned variable, in case my MRV code doesn't work"""
-    # var = ''  #do must implement MRV and degree heuristics
+    var = ''  #do must implement MRV and degree heuristics
     # for variable in domains.keys():
-    # if variable not in assignment.keys():
-    # var = variable
+    #     if variable not in assignment.keys():
+    #         var = variable
     #         break
 
     """implementing MRV"""
-    MRV, curr = ('', 10000000)  #(var name, number of values in the domain)
+    var, curr = ('', 10000000)  #(var name, number of values in the domain)
     for variable in domains.keys():
         if variable not in assignment.keys():
             curr = (variable, len(domains[variable]))
-        if MRV[1] > curr[1]:
-            MRV = curr
-    var = MRV[1]
+        if var[1] > curr[1]:
+            var = curr
+    var = var[1]
 
     #do ORDERING.. must implement the least-constraining-value heuristic == value that rules out the fewest choices for the neighboring variables in the constraint graph
     orderedDomain = []
