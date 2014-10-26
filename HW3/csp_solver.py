@@ -44,7 +44,7 @@ def getInitialDomains(constraints):
     Given a list of constraints, returns a dictionary that maps variables to lists of integers from 0 to max(D, V),
     where D is the number of distinct variables and V is the max integer in a constraint.
     :param constraints: list of original constraints
-    :return: a dictionary
+    :return: a dictionary of domains for each node
     """
     v = 0  # represents highest integer value in any constraint
     variableSet = set()  # set of variables in the problem
@@ -61,6 +61,28 @@ def getInitialDomains(constraints):
         domains[variable] = global_domain
     return domains
 
+def getNeighbors(constraints):
+    """
+    A dict of {var:[var,...]} that for each variable lists the other variables that participate in constraints.
+    :param constraints: list of original constraints
+    :return: a dictionary of neighbors for each node
+    """
+    neighbors = {}
+    for variable in domains.keys():
+        print variable
+        vars = set()
+
+        for c in constraints:
+            print c
+            if c[0] is variable: #this does not work.. example SA does not get all its neighbors
+                print variable, "has neighbor", c[2], c
+                vars.add(c[2])
+            elif c[2] is variable: #this works
+                print variable, "has neighbor", c[0], c
+                vars.add(c[0])
+
+        neighbors[variable] = list(vars)
+    return neighbors
 
 # constraints method experimental for now.
 def constraintFunction(A, a, B, b):
@@ -112,7 +134,7 @@ def Backtrack(assignment):  # returns a solution, or failure
         return assignment
 
     """ this gets the first unassigned variable, in case my MRV code doesn't work"""
-    var = ''  #do must implement MRV and degree heuristics
+    # var = ''  #do must implement MRV and degree heuristics
     # for variable in domains.keys():
     #     if variable not in assignment.keys():
     #         var = variable
@@ -138,6 +160,20 @@ def Backtrack(assignment):  # returns a solution, or failure
     return "NO SOLUTION"
 
 
+def AC_3(domain): #returns false if an inconsistency is found, true otherwise
+    return
+
+def revise(domain, X_i, X_j): #returns true iff we revise the domain of X_i
+    revised = False
+    for x in domain[X_i]:
+        for y in domain[X_j]:
+            #check both ways???
+            if not constraintFunction(X_i, x, X_j, y) and not constraintFunction(X_j, y, X_i, x):
+                domain[X_i].remove(x)
+                revised = True
+    return revised
+
+
 if len(sys.argv) is 3:
     problem_filename = sys.argv[1]
     use_forward_check_flag = sys.argv[2]
@@ -147,9 +183,11 @@ else:
 
 constraints = constraintsFromFile(problem_filename)  # list of tuples in the form: (var, rel, var or num)
 domains = getInitialDomains(constraints)  # map from variables to domain
+neighbors = getNeighbors(constraints)
 assignment = {}  # map from one variable to one value (the result)
 
 # ##------Test Statements Below THIS LINE-------###
 print domains
 print "Keys:", domains.keys()
+print "Neighbors:", neighbors
 print constraintFunction('NT', 2, 'Q', 7)
