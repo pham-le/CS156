@@ -79,8 +79,21 @@ def getNeighbors(constraints):
         neighbors[variable] = list(vars)
     return neighbors
 
+def nodeConsistent(A, a):
+    for c in constraints:
+        if type(c[2]) is int:
+            if c[1] == "eq" and a != c[2]:
+                return False
+            if c[1] == "ne" and a == c[2]:
+                return False
+            if c[1] == "lt" and a >= c[2]:
+                return False
+            if c[1] == "gt" and a <= c[2]:
+                return False
+    return True
+
 # constraints method experimental for now.
-def constraintFunction(A, a, B, b):
+def arcConsistent(A, a, B, b):
     """
     Returns true if neighbors A, B satisfy the constraint when they have values A=a, B=b.
     :param A: name of Neighbor A
@@ -90,33 +103,15 @@ def constraintFunction(A, a, B, b):
     :return: true if assignment satisfies the constraints
     """
     for c in constraints:
-        if c[0] == A:
-            if type(c[2]) is int:
-                if c[1] == "eq":
-                    if a != c[2]:
-                        return False
-                elif c[1] == "ne":
-                    if a == c[2]:
-                        return False
-                elif c[1] == "lt":
-                    if a >= c[2]:
-                        return False
-                elif c[1] == "gt":
-                    if a <= c[2]:
-                        return False
-            elif c[2] == B:
-                if c[1] == "eq":
-                    if a != b:
-                        return False
-                if c[1] == "ne":
-                    if a == b:
-                        return False
-                if c[1] == "lt":
-                    if a >= b:
-                        return False
-                if c[1] == "gt":
-                    if a <= b:
-                        return False
+        if c[0] == A and c[2] == B:
+            if c[1] == "eq" and a != b:
+                return False
+            if c[1] == "ne" and a == b:
+                return False
+            if c[1] == "lt" and a >= b:
+                return False
+            if c[1] == "gt" and a <= b:
+                return False
     return True
 
 
@@ -164,9 +159,14 @@ def isConsistent(var, val, assignment):
     :param val: Value to be assigned
     :return: True if consistent, False if inconsistent
     """
-    for neighbor in neighbors[var]:
-        if neighbor in assignment:
-            if not constraintFunction(var, val, neighbor, assignment[neighbor]):
+    #check unary constraints
+    if not nodeConsistent(var, val):
+        return False
+
+    #checks binary constraints
+    for var2 in domains.keys():
+        if var2 in assignment and var != var2:
+            if not arcConsistent(var, val, var2, assignment[var2]) or not arcConsistent(var2, assignment[var2], var, val):
                 return False
     return True
 
@@ -200,5 +200,4 @@ neighbors = getNeighbors(constraints)
 print domains
 print "Keys:", domains.keys()
 print "Neighbors:", neighbors
-print constraintFunction('NT', 2, 'Q', 7)
 print backtrackingSearch()
