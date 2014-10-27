@@ -124,20 +124,34 @@ def backtrack(assignment):  # returns a solution, or failure
         return assignment
 
     """ this gets the first unassigned variable, in case my MRV code doesn't work"""
-    var = ''  #do must implement MRV and degree heuristics
-    for variable in domains.keys():
-        if variable not in assignment.keys():
-            var = variable
-            break
-
-    """implementing MRV"""
-    # var, curr = ('', 10000000)  #(var name, number of values in the domain)
+    # var = ''  #do must implement MRV and degree heuristics
     # for variable in domains.keys():
     #     if variable not in assignment.keys():
-    #         curr = (variable, len(domains[variable]))
-    #     if var[1] > curr[1]:
-    #         var = curr
-    # var = var[1]
+    #         var = variable
+    #         break
+
+    """implementing MRV"""
+    mrv_list = [] #list of variables tied for the minimum remaining values
+    var = ('', 10000000) #represents the var with minimum size so far, and its size (var, len(domain))
+    for variable in domains.keys():
+        if variable not in assignment.keys():
+            temp = (variable, len(domains[variable]))
+            if temp[1] == var[1]:
+                mrv_list.append(temp[0])
+            if temp[1] < var[1]:
+                mrv_list = []
+                var = temp
+                mrv_list.append(var[0])
+    print mrv_list
+
+    """implementing degree heuristic to break MRV ties"""
+    var = (mrv_list[0], len(neighbors[mrv_list[0]])) #start with first value as minimum neighbor length
+    for variable in mrv_list:
+        if len(neighbors[variable]) > var[1]:
+            var = (variable, len(neighbors[variable]))
+
+    var = var[0]
+
 
     #do ORDERING.. least-constraining-value heuristic
     orderedDomain = []
