@@ -10,6 +10,7 @@ Justin Tieu - 007789678
 """
 
 import sys
+import copy
 
 
 def constraintsFromFile(filename):
@@ -44,7 +45,7 @@ def getInitialDomains(constraints):
     Given a list of constraints, returns a dictionary that maps variables to lists of integers from 0 to max(D, V),
     where D is the number of distinct variables and V is the max integer in a constraint.
     :param constraints: list of original constraints
-    :return: a dictionary of domains for each node
+    :return: a dictionary of domains for each variable
     """
     v = 0  # represents highest integer value in any constraint
     variableSet = set()  # set of variables in the problem
@@ -65,22 +66,16 @@ def getNeighbors(constraints):
     """
     A dict of {var:[var,...]} that for each variable lists the other variables that participate in constraints.
     :param constraints: list of original constraints
-    :return: a dictionary of neighbors for each node
+    :return: a dictionary of neighbors for each variable
     """
     neighbors = {}
     for variable in domains.keys():
-        print variable
         vars = set()
-
         for c in constraints:
-            print c
-            if c[0] is variable: #this does not work.. example SA does not get all its neighbors
-                print variable, "has neighbor", c[2], c
+            if c[0] == variable and type(c[2]) is not int: #this does not work.. example SA does not get all its neighbors
                 vars.add(c[2])
-            elif c[2] is variable: #this works
-                print variable, "has neighbor", c[0], c
+            elif c[2] == variable: #this works
                 vars.add(c[0])
-
         neighbors[variable] = list(vars)
     return neighbors
 
@@ -125,40 +120,55 @@ def constraintFunction(A, a, B, b):
     return True
 
 
-def Backtracking_Search():  # returns a solution, or a failure
-    return Backtrack({})
+def backtrackingSearch():  # returns a solution, or a failure
+    return backtrack({})
 
 
-def Backtrack(assignment):  # returns a solution, or failure
+def backtrack(assignment):  # returns a solution, or failure
     if len(assignment) is len(domains):  # all variables are assigned
         return assignment
 
     """ this gets the first unassigned variable, in case my MRV code doesn't work"""
-    # var = ''  #do must implement MRV and degree heuristics
-    # for variable in domains.keys():
-    #     if variable not in assignment.keys():
-    #         var = variable
-    #         break
-
-    """implementing MRV"""
-    var, curr = ('', 10000000)  #(var name, number of values in the domain)
+    var = ''  #do must implement MRV and degree heuristics
     for variable in domains.keys():
         if variable not in assignment.keys():
-            curr = (variable, len(domains[variable]))
-        if var[1] > curr[1]:
-            var = curr
-    var = var[1]
+            var = variable
+            break
 
-    #do ORDERING.. must implement the least-constraining-value heuristic == value that rules out the fewest choices for the neighboring variables in the constraint graph
+    """implementing MRV"""
+    # var, curr = ('', 10000000)  #(var name, number of values in the domain)
+    # for variable in domains.keys():
+    #     if variable not in assignment.keys():
+    #         curr = (variable, len(domains[variable]))
+    #     if var[1] > curr[1]:
+    #         var = curr
+    # var = var[1]
+
+    #do ORDERING.. least-constraining-value heuristic
     orderedDomain = []
     for value in domains[var]:  #no ordering for now
-        #check if value consistent with assignment here
-        assignment[var] = value
-        inferences = False  #do forward checking here.. AC3
-        #INFERENCES: return empty assignment or use forward checking (if allowed)
-
+        if isConsistent(var, value, assignment):
+            assignment[var] = value
+            #forward checking
+            result = backtrack(assignment)
+            if result != "NO SOLUTION":
+                return result
+        if var in assignment.keys():
+            del assignment[var]
     return "NO SOLUTION"
 
+def isConsistent(var, val, assignment):
+    """
+    Checks if a potential assignment is consistent.
+    :param var: Variable name
+    :param val: Value to be assigned
+    :return: True if consistent, False if inconsistent
+    """
+    for neighbor in neighbors[var]:
+        if neighbor in assignment:
+            if not constraintFunction(var, val, neighbor, assignment[neighbor]):
+                return False
+    return True
 
 def AC_3(domain): #returns false if an inconsistency is found, true otherwise
     return
@@ -184,10 +194,11 @@ else:
 constraints = constraintsFromFile(problem_filename)  # list of tuples in the form: (var, rel, var or num)
 domains = getInitialDomains(constraints)  # map from variables to domain
 neighbors = getNeighbors(constraints)
-assignment = {}  # map from one variable to one value (the result)
+
 
 # ##------Test Statements Below THIS LINE-------###
 print domains
 print "Keys:", domains.keys()
 print "Neighbors:", neighbors
 print constraintFunction('NT', 2, 'Q', 7)
+print backtrackingSearch()
