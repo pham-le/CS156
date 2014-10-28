@@ -156,8 +156,8 @@ def backtrack(assignment):  # returns a solution, or failure
     if len(mrv_list) > 0:
         var = (mrv_list[0], 10000000) #start with first value as minimum neighbor length
         for variable in mrv_list:
-            count = len(neighbors[var])
-            for neighbor in neighbors[var]:
+            count = len(neighbors[variable])
+            for neighbor in neighbors[variable]:
                 if neighbor in assignment.keys(): #checks if neighbor is already assigned, minus 1 if true
                     count -= 1
             temp = (variable, count) #temp variable.. (variable name, number of unassigned neighbors)
