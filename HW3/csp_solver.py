@@ -81,6 +81,12 @@ def getNeighbors(constraints):
     return neighbors
 
 def nodeConsistent(A, a):
+    """
+    Checks if a temporary assignment for a variable satisfies all unary constraints.
+    :param A: name of variable
+    :param a: value
+    :return: true if assignment satisfies unary constraints
+    """
     for c in constraints:
         if type(c[2]) is int:
             if c[1] == "eq" and a != c[2]:
@@ -93,10 +99,10 @@ def nodeConsistent(A, a):
                 return False
     return True
 
-# constraints method experimental for now.
+
 def arcConsistent(A, a, B, b):
     """
-    Returns true if neighbors A, B satisfy the constraint when they have values A=a, B=b.
+    Checks if temporary assignments for two neighbors satisfy all binary constraints.
     :param A: name of Neighbor A
     :param a: value of Neighbor A
     :param B: name of Neighbor B
@@ -116,11 +122,20 @@ def arcConsistent(A, a, B, b):
     return True
 
 
-def backtrackingSearch():  # returns a solution, or a failure
+def backtrackingSearch():
+    """
+    Chooses values for one variable at a time and backtracks when a variable has no legal values left to assign.
+    :return: a solution or failure
+    """
     return backtrack({})
 
 
 def backtrack(assignment):  # returns a solution, or failure
+    """
+    Keeps only a single representation of a state and alters that representation, if possible.
+    :param assignment:
+    :return: a solution or failure
+    """
     if len(assignment) is len(domains):  # all variables are assigned
         return assignment
 
@@ -171,7 +186,13 @@ def backtrack(assignment):  # returns a solution, or failure
     for value in domains[var]:  #no ordering for now
         if isConsistent(var, value, assignment):
             assignment[var] = value
+
             #forward checking
+            if use_forward_check_flag is 1:
+                if AC_3(domains):
+                    #add inferences to assignment
+                    inferences = ''
+
             result = backtrack(assignment)
             if result != "NO SOLUTION":
                 return result
@@ -197,27 +218,37 @@ def isConsistent(var, val, assignment):
                 return False
     return True
 
-def AC_3(domain): #returns false if an inconsistency is found, true otherwise
+def AC_3():
+    """
+    Checks if every variable is arc consistent.
+    :return: False if an inconsistency is found, True otherwise
+    """
     queue = Queue()
     for var in domains.keys(): #all arcs in the csp
         for neighbor in neighbors[var]:
             queue.put((var, neighbor))
     while queue.full():
         (X_i, X_j) = queue.pop()
-        if revise(domain, X_i, X_j):
-            if len(domain[X_i]) is 0:
+        if revise(domains, X_i, X_j):
+            if len(domains[X_i]) is 0:
                 return False
         for X_k in copy.deepcopy(neighbors[X_i]).remove(X_j):
             queue.put((X_k, X_i)) # since X_i's domains change might affect X_k
     return True
 
-def revise(domain, X_i, X_j): #returns true iff we revise the domain of X_i
+def revise(X_i, X_j):
+    """
+    Revises the domain if, given two variables, they are arc consistent with each other,
+    :param X_i: Variable 1
+    :param X_j: Variable 2
+    :return: True if and only if we revise the domain of X_i
+    """
     revised = False
-    for x in domain[X_i]:
-        for y in domain[X_j]:
+    for x in domains[X_i]:
+        for y in domains[X_j]:
             #check both ways???
             if not arcConsistent(X_i, x, X_j, y) and not arcConsistent(X_j, y, X_i, x):
-                domain[X_i].remove(x)
+                domains[X_i].remove(x)
                 revised = True
     return revised
 
