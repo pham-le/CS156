@@ -11,6 +11,7 @@ Justin Tieu - 007789678
 
 import sys
 import copy
+import Queue
 
 
 def constraintsFromFile(filename):
@@ -123,7 +124,7 @@ def backtrack(assignment):  # returns a solution, or failure
     if len(assignment) is len(domains):  # all variables are assigned
         return assignment
 
-    """ this gets the first unassigned variable, in case my MRV code doesn't work"""
+    """ this gets the first unassigned variable"""
     # var = ''  #do must implement MRV and degree heuristics
     # for variable in domains.keys():
     #     if variable not in assignment.keys():
@@ -185,14 +186,25 @@ def isConsistent(var, val, assignment):
     return True
 
 def AC_3(domain): #returns false if an inconsistency is found, true otherwise
-    return
+    queue = Queue()
+    for var in domains.keys(): #all arcs in the csp
+        for neighbor in neighbors[var]:
+            queue.put((var, neighbor))
+    while queue.full():
+        (X_i, X_j) = queue.pop()
+        if revise(domain, X_i, X_j):
+            if len(domain[X_i]) is 0:
+                return False
+        for X_k in copy.deepcopy(neighbors[X_i]).remove(X_j):
+            queue.put((X_k, X_i)) # since X_i's domains change might affect X_k
+    return True
 
 def revise(domain, X_i, X_j): #returns true iff we revise the domain of X_i
     revised = False
     for x in domain[X_i]:
         for y in domain[X_j]:
             #check both ways???
-            if not constraintFunction(X_i, x, X_j, y) and not constraintFunction(X_j, y, X_i, x):
+            if not arcConsistent(X_i, x, X_j, y) and not arcConsistent(X_j, y, X_i, x):
                 domain[X_i].remove(x)
                 revised = True
     return revised
