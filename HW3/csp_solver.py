@@ -11,7 +11,6 @@ Justin Tieu - 007789678
 
 import sys
 import copy
-import Queue
 
 
 def constraintsFromFile(filename):
@@ -181,9 +180,7 @@ def backtrack(assignment):  # returns a solution, or failure
 
             #forward checking
             if use_forward_check_flag is 1:
-                if AC_3():
-                    #add inferences to assignment
-                    inferences = ''
+                AC_3()
 
             result = backtrack(assignment)
             if result != "NO SOLUTION":
@@ -215,17 +212,19 @@ def AC_3():
     Checks if every variable is arc consistent.
     :return: False if an inconsistency is found, True otherwise
     """
-    queue = Queue()
+    queue = []
     for var in domains.keys(): #all arcs in the csp
         for neighbor in neighbors[var]:
-            queue.put((var, neighbor))
-    while queue.full():
+            queue.append((var, neighbor))
+    while queue is not []:
         (X_i, X_j) = queue.pop()
         if revise(X_i, X_j):
             if len(domains[X_i]) is 0:
                 return False
-        for X_k in copy.deepcopy(neighbors[X_i]).remove(X_j):
-            queue.put((X_k, X_i)) # since X_i's domains change might affect X_k
+        copiedNeighbors = copy.deepcopy(neighbors[X_i])
+        copiedNeighbors.remove(X_j)
+        for X_k in copiedNeighbors:
+            queue.append((X_k, X_i)) # since X_i's domains change might affect X_k
     return True
 
 def revise(X_i, X_j):
