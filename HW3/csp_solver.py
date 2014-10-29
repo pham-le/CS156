@@ -88,7 +88,7 @@ def nodeConsistent(A, a):
     :return: true if assignment satisfies unary constraints
     """
     for c in constraints:
-        if type(c[2]) is int:
+        if type(c[2]) is int and c[0] == A:
             if c[1] == "eq" and a != c[2]:
                 return False
             if c[1] == "ne" and a == c[2]:
@@ -158,7 +158,7 @@ def backtrack(assignment):  # returns a solution, or failure
                 mrv_list = []
                 var = temp
                 mrv_list.append(var[0])
-    print mrv_list
+    #print mrv_list
 
     """implementing degree heuristic to break MRV ties"""
     # var = (mrv_list[0], len(neighbors[mrv_list[0]])) #start with first value as minimum neighbor length
@@ -168,7 +168,7 @@ def backtrack(assignment):  # returns a solution, or failure
     # var = var[0]
 
     """degree heuristic"""
-    if len(mrv_list) > 0:
+    if len(mrv_list) > 1:
         var = (mrv_list[0], 10000000) #start with first value as minimum neighbor length
         for variable in mrv_list:
             count = len(neighbors[variable])
@@ -266,7 +266,7 @@ neighbors = getNeighbors(constraints)
 
 
 # ##------Test Statements Below THIS LINE-------###
-print domains
-print "Keys:", domains.keys()
-print "Neighbors:", neighbors
+# print domains
+# print "Keys:", domains.keys()
+# print "Neighbors:", neighbors
 print backtrackingSearch()
