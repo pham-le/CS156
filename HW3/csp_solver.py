@@ -158,25 +158,17 @@ def backtrack(assignment):  # returns a solution, or failure
                 mrv_list = []
                 var = temp
                 mrv_list.append(var[0])
-    #print mrv_list
 
-    """implementing degree heuristic to break MRV ties"""
-    # var = (mrv_list[0], len(neighbors[mrv_list[0]])) #start with first value as minimum neighbor length
-    # for variable in mrv_list:
-    #     if len(neighbors[variable]) > var[1]:
-    #         var = (variable, len(neighbors[variable]))
-    # var = var[0]
-
-    """degree heuristic"""
+    """degree heuristic to break ties"""
     if len(mrv_list) > 1:
-        var = (mrv_list[0], 10000000) #start with first value as minimum neighbor length
+        var = (mrv_list[0], 0) #start with first value as minimum neighbor length
         for variable in mrv_list:
             count = len(neighbors[variable])
             for neighbor in neighbors[variable]:
                 if neighbor in assignment.keys(): #checks if neighbor is already assigned, minus 1 if true
                     count -= 1
             temp = (variable, count) #temp variable.. (variable name, number of unassigned neighbors)
-            if temp[1] < var[1]: #checks which has a smaller amount of unassigned neighbors
+            if temp[1] > var[1]: #checks which has a smaller amount of unassigned neighbors
                 var = temp
     var = var[0]
 
