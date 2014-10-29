@@ -181,7 +181,7 @@ def backtrack(assignment):  # returns a solution, or failure
 
             #forward checking
             if use_forward_check_flag is 1:
-                if AC_3(domains):
+                if AC_3():
                     #add inferences to assignment
                     inferences = ''
 
@@ -221,7 +221,7 @@ def AC_3():
             queue.put((var, neighbor))
     while queue.full():
         (X_i, X_j) = queue.pop()
-        if revise(domains, X_i, X_j):
+        if revise(X_i, X_j):
             if len(domains[X_i]) is 0:
                 return False
         for X_k in copy.deepcopy(neighbors[X_i]).remove(X_j):
@@ -247,7 +247,7 @@ def revise(X_i, X_j):
 
 if len(sys.argv) is 3:
     problem_filename = sys.argv[1]
-    use_forward_check_flag = sys.argv[2]
+    use_forward_check_flag = int(sys.argv[2])
 else:
     print "Invalid input. Please use the format:"
     print "python csp_solver.py problem_filename use_forward_check_flag"
