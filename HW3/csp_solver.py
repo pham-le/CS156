@@ -216,15 +216,17 @@ def AC_3():
     for var in domains.keys(): #all arcs in the csp
         for neighbor in neighbors[var]:
             queue.append((var, neighbor))
-    while queue is not []:
+    while queue != []:
         (X_i, X_j) = queue.pop()
         if revise(X_i, X_j):
             if len(domains[X_i]) is 0:
                 return False
-        copiedNeighbors = copy.deepcopy(neighbors[X_i])
-        copiedNeighbors.remove(X_j)
-        for X_k in copiedNeighbors:
-            queue.append((X_k, X_i)) # since X_i's domains change might affect X_k
+        #copiedNeighbors = copy.deepcopy(neighbors[X_i])
+        #copiedNeighbors.remove(X_j)
+            for X_k in neighbors[X_i]:#copiedNeighbors:
+                if (X_k != X_j):
+                    queue.append((X_k, X_i)) # since X_i's domains change might affect X_k
+    print "exiting AC3"
     return True
 
 def revise(X_i, X_j):
@@ -238,7 +240,7 @@ def revise(X_i, X_j):
     for x in domains[X_i]:
         for y in domains[X_j]:
             #check both ways???
-            if not arcConsistent(X_i, x, X_j, y) and not arcConsistent(X_j, y, X_i, x):
+            if (not arcConsistent(X_i, x, X_j, y)) and (not arcConsistent(X_j, y, X_i, x)):
                 domains[X_i].remove(x)
                 revised = True
     return revised
@@ -252,7 +254,7 @@ else:
     print "python csp_solver.py problem_filename use_forward_check_flag"
 
 constraints = constraintsFromFile(problem_filename)  # list of tuples in the form: (var, rel, var or num)
-domains = getInitialDomains(constraints)  # map from variables to domain
+domains = getInitialDomains(constraints) # map from variables to domain
 neighbors = getNeighbors(constraints)
 
 
@@ -261,3 +263,4 @@ neighbors = getNeighbors(constraints)
 # print "Keys:", domains.keys()
 # print "Neighbors:", neighbors
 print backtrackingSearch()
+print domains
