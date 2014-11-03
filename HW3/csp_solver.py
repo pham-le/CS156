@@ -180,11 +180,18 @@ def backtrack(assignment):  # returns a solution, or failure
 
             #forward checking
             if use_forward_check_flag is 1:
-                AC_3()
-
-            result = backtrack(assignment)
-            if result != "NO SOLUTION":
-                return result
+                old_assignment = copy.deepcopy(assignment)
+                if(AC_3()):
+                    print "domains after AC3:", domains
+                    result = backtrack(assignment)
+                    if result != "NO SOLUTION":
+                        return result
+                else:
+                    assignment = old_assignment
+            else: #no forward checking
+                result = backtrack(assignment)
+                if result != "NO SOLUTION":
+                        return result
         if var in assignment.keys():
             del assignment[var]
     return "NO SOLUTION"
@@ -221,12 +228,9 @@ def AC_3():
         if revise(X_i, X_j):
             if len(domains[X_i]) is 0:
                 return False
-        #copiedNeighbors = copy.deepcopy(neighbors[X_i])
-        #copiedNeighbors.remove(X_j)
-            for X_k in neighbors[X_i]:#copiedNeighbors:
+            for X_k in neighbors[X_i]:
                 if (X_k != X_j):
                     queue.append((X_k, X_i)) # since X_i's domains change might affect X_k
-    print "exiting AC3"
     return True
 
 def revise(X_i, X_j):
@@ -238,11 +242,9 @@ def revise(X_i, X_j):
     """
     revised = False
     for x in domains[X_i]:
-        for y in domains[X_j]:
-            #check both ways???
-            if (not arcConsistent(X_i, x, X_j, y)) and (not arcConsistent(X_j, y, X_i, x)):
-                domains[X_i].remove(x)
-                revised = True
+        if all(not arcConsistent(X_i, x, X_j, y) for y in domains[X_j]): #and (not arcConsistent(X_j, y, X_i, x))) for y in domains[X_j]):
+            domains[X_i].remove(x)
+            revised = True
     return revised
 
 
@@ -259,8 +261,6 @@ neighbors = getNeighbors(constraints)
 
 
 # ##------Test Statements Below THIS LINE-------###
-# print domains
 # print "Keys:", domains.keys()
 # print "Neighbors:", neighbors
 print backtrackingSearch()
-print domains
