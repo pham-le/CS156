@@ -177,18 +177,15 @@ def backtrack(assignment):  # returns a solution, or failure
     for value in domains[var]:  #no ordering for now
         if isConsistent(var, value, assignment):
             assignment[var] = value
-
             #forward checking
             if use_forward_check_flag is 1:
-                old_assignment = copy.deepcopy(assignment)
                 if(AC_3()):
                     print "domains after AC3:", domains
                     result = backtrack(assignment)
                     if result != "NO SOLUTION":
                         return result
-                else:
-                    assignment = old_assignment
-            else: #no forward checking
+            #no forward checking
+            else: 
                 result = backtrack(assignment)
                 if result != "NO SOLUTION":
                         return result
@@ -243,6 +240,7 @@ def revise(X_i, X_j):
     revised = False
     for x in domains[X_i]:
         if all(not arcConsistent(X_i, x, X_j, y) for y in domains[X_j]): #and (not arcConsistent(X_j, y, X_i, x))) for y in domains[X_j]):
+            print "removing domain entry!"
             domains[X_i].remove(x)
             revised = True
     return revised
