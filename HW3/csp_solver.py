@@ -87,7 +87,7 @@ def nodeConsistent(A, a):
     :return: true if assignment satisfies unary constraints
     """
     for c in constraints:
-        if type(c[2]) is int and c[0] == A:
+        if type(c[2]) == int and c[0] == A:
             if c[1] == "eq" and a != c[2]:
                 return False
             if c[1] == "ne" and a == c[2]:
@@ -145,7 +145,7 @@ def backtrack(assignment):  # returns a solution, or failure
     #         var = variable
     #         break
 
-    """implementing MRV"""
+    """implementing MRV heuristic"""
     mrv_list = [] #list of variables tied for the minimum remaining values
     var = ('', 10000000) #represents the var with minimum size so far, and its size (var, len(domain))
     for variable in domains.keys():
@@ -177,10 +177,11 @@ def backtrack(assignment):  # returns a solution, or failure
     for value in domains[var]:  #no ordering for now
         if isConsistent(var, value, assignment):
             assignment[var] = value
+            old_domains = copy.deepcopy(domains[var])
+            domains[var] = [value]
             #forward checking
             if use_forward_check_flag is 1:
                 if(AC_3()):
-                    print "domains after AC3:", domains
                     result = backtrack(assignment)
                     if result != "NO SOLUTION":
                         return result
@@ -189,6 +190,9 @@ def backtrack(assignment):  # returns a solution, or failure
                 result = backtrack(assignment)
                 if result != "NO SOLUTION":
                         return result
+            print "domain of var before reversion", var, domains[var]
+            domains[var] = old_domains
+            print "domain of var after reversion", var, domains[var]
         if var in assignment.keys():
             del assignment[var]
     return "NO SOLUTION"
@@ -245,6 +249,23 @@ def revise(X_i, X_j):
             revised = True
     return revised
 
+def node_consistency():
+    """Simple node-consistency algorithm to esure all domains are consistent with unary constraints"""
+    for c in constraints:
+        if type(c[2]) == int:
+            if c[1] == "eq":
+                domains[c[0]] = [c[2]]
+            elif c[1] == "ne":
+                domains[c[0]].remove(c[2])
+            elif c[1] == "lt":
+                for i in domains[c[0]]:
+                    if i >= c[2]:
+                        domains[c[0]].remove(i)
+            elif c[1] == "gt":
+                for i in domains[c[0]]:
+                    if i <= c[2]:
+                        domains[c[0]].remove(i)
+
 
 if len(sys.argv) is 3:
     problem_filename = sys.argv[1]
@@ -256,9 +277,9 @@ else:
 constraints = constraintsFromFile(problem_filename)  # list of tuples in the form: (var, rel, var or num)
 domains = getInitialDomains(constraints) # map from variables to domain
 neighbors = getNeighbors(constraints)
+node_consistency()
 
 
 # ##------Test Statements Below THIS LINE-------###
-# print "Keys:", domains.keys()
-# print "Neighbors:", neighbors
-print backtrackingSearch()
+
+print sorted(backtrackingSearch())
