@@ -6,9 +6,17 @@ Jannette Pham-Le - 007855120
 Justin Tieu - 007789678
 
 Homework 3:
-∨∧
+
 1. Suppose we have a two person game. In a given ply, a player can make one of three moves. The value of a move for a player can be encoded in three bits, one for sign, and two to encode a number 1-4. We use the variable Vm1,...,mi,b to denote the bth bit of the value of the sequence of moves m1,...mi to MAX. Suppose a game ends after 4 plys. Express as three propositional formulas the backed up minimax value of move 1, V1,b for each bit b, in terms of the variables V1,m2,m3,m4,b. Convert these formulas to CNF.
 
+move1 = V1,b
+move2 = V11,b ∨ V12,b ∨ V13,b
+move3 = (V111,b ∨ V112,b ∨ V113,b) ∨ (V121,b ∨ V122,b ∨ V123,b) ∨ (V131,b ∨ V132,b ∨ V133,b)
+move4 = (V1111,b ∨ V1112,b ∨ V1113,b) ∨ (V1121,b ∨ V1122,b ∨ V1123,b) ∨ (V1131,b ∨ V1132,b ∨ V1133,b) ∨ 
+(V1211,b ∨ V1212,b ∨ V1213,b) ∨ (V1221,b ∨ V1222,b ∨ V1223,b) ∨ (V1231,b ∨ V1232,b ∨ V1233,b) ∨  
+(V1311,b ∨ V1312,b ∨ V1313,b) ∨ (V1321,b ∨ V1322,b ∨ V1323,b) ∨ (V1331,b ∨ V1332,b ∨ V1333,b) 
+
+move1 ∧ move2 ∧ move3 ∧ move4
 
 2. The pigeonhole principle PHPn+1n says any function from n+1 pigeons into n holes must result in two pigeons in the same hole. Let Pi,j be a variable expressing that pigeon i gets mapped to hole j. Consider the n=3 case. Express the following as propositional formulas:
 a. Every i gets mapped to some j.
