@@ -79,26 +79,6 @@ def getNeighbors(constraints):
         neighbors[variable] = list(vars)
     return neighbors
 
-def nodeConsistent(A, a):
-    """
-    Checks if a temporary assignment for a variable satisfies all unary constraints.
-    :param A: name of variable
-    :param a: value
-    :return: true if assignment satisfies unary constraints
-    """
-    for c in constraints:
-        if type(c[2]) == int and c[0] == A:
-            if c[1] == "eq" and a != c[2]:
-                return False
-            if c[1] == "ne" and a == c[2]:
-                return False
-            if c[1] == "lt" and a >= c[2]:
-                return False
-            if c[1] == "gt" and a <= c[2]:
-                return False
-    return True
-
-
 def arcConsistent(A, a, B, b):
     """
     Checks if temporary assignments for two neighbors satisfy all binary constraints.
@@ -205,10 +185,6 @@ def isConsistent(var, val, assignment):
     :param val: Value to be assigned
     :return: True if consistent, False if inconsistent
     """
-    #check unary constraints
-    if not nodeConsistent(var, val):
-        return False
-
     #checks binary constraints
     for var2 in domains.keys():
         if var2 in assignment and var != var2:
@@ -251,7 +227,7 @@ def revise(X_i, X_j):
     return revised
 
 def node_consistency():
-    """Simple node-consistency algorithm to esure all domains are consistent with unary constraints"""
+    """Reduce domains according to unary constraints"""
     for c in constraints:
         if type(c[2]) == int:
             if c[1] == "eq":
