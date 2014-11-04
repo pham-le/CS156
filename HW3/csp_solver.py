@@ -118,13 +118,6 @@ def backtrack(assignment):  # returns a solution, or failure
     if len(assignment) is len(domains):  # all variables are assigned
         return assignment
 
-    """ this gets the first unassigned variable"""
-    # var = ''  #do must implement MRV and degree heuristics
-    # for variable in domains.keys():
-    #     if variable not in assignment.keys():
-    #         var = variable
-    #         break
-
     """implementing MRV heuristic"""
     mrv_list = [] #list of variables tied for the minimum remaining values
     var = ('', 10000000) #represents the var with minimum size so far, and its size (var, len(domain))
@@ -156,15 +149,15 @@ def backtrack(assignment):  # returns a solution, or failure
     orderedDomain = []
     for value in domains[var]:  #no ordering for now
         if isConsistent(var, value, assignment):
-            print "trying", var, '=', value
+            print "Trying to assign:", var, '=', value
             assignment[var] = value
             old_domains = copy.deepcopy(domains[var])
             domains[var] = [value]
             #forward checking
             if use_forward_check_flag is 1:
-                print "domains BEFORE AC_3", domains
+                print "Domains before AC_3", domains
                 if(AC_3()):
-                    print "domains AFTER AC_3", domains
+                    print "Domains after AC_3", domains
                     result = backtrack(assignment)
                     if result != "NO SOLUTION":
                         return result
@@ -254,7 +247,6 @@ else:
 constraints = constraintsFromFile(problem_filename)  # list of tuples in the form: (var, rel, var or num)
 domains = getInitialDomains(constraints) # map from variables to domain
 neighbors = getNeighbors(constraints) # map from variables to other variables
-print neighbors
 node_consistency() #limits domains to satisfy unary constraints
 
 
