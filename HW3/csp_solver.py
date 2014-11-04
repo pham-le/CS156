@@ -176,12 +176,15 @@ def backtrack(assignment):  # returns a solution, or failure
     orderedDomain = []
     for value in domains[var]:  #no ordering for now
         if isConsistent(var, value, assignment):
+            print "trying", var, '=', value
             assignment[var] = value
             old_domains = copy.deepcopy(domains[var])
             domains[var] = [value]
             #forward checking
             if use_forward_check_flag is 1:
+                print "domains BEFORE AC_3", domains
                 if(AC_3()):
+                    print "domains AFTER AC_3", domains
                     result = backtrack(assignment)
                     if result != "NO SOLUTION":
                         return result
@@ -190,9 +193,7 @@ def backtrack(assignment):  # returns a solution, or failure
                 result = backtrack(assignment)
                 if result != "NO SOLUTION":
                         return result
-            print "domain of var before reversion", var, domains[var]
             domains[var] = old_domains
-            print "domain of var after reversion", var, domains[var]
         if var in assignment.keys():
             del assignment[var]
     return "NO SOLUTION"
@@ -243,8 +244,8 @@ def revise(X_i, X_j):
     """
     revised = False
     for x in domains[X_i]:
-        if all(not arcConsistent(X_i, x, X_j, y) for y in domains[X_j]): #and (not arcConsistent(X_j, y, X_i, x))) for y in domains[X_j]):
-            print "removing domain entry!"
+        if (all(not arcConsistent(X_i, x, X_j, y) for y in domains[X_j]) 
+                and all(not arcConsistent(X_j, y, X_i, x) for y in domains[X_j])):
             domains[X_i].remove(x)
             revised = True
     return revised
@@ -276,10 +277,15 @@ else:
 
 constraints = constraintsFromFile(problem_filename)  # list of tuples in the form: (var, rel, var or num)
 domains = getInitialDomains(constraints) # map from variables to domain
-neighbors = getNeighbors(constraints)
-node_consistency()
+neighbors = getNeighbors(constraints) # map from variables to other variables
+print neighbors
+node_consistency() #limits domains to satisfy unary constraints
 
 
 # ##------Test Statements Below THIS LINE-------###
-
-print sorted(backtrackingSearch())
+solution = backtrackingSearch()
+if(solution != "NO SOLUTION"):
+    for key in sorted(solution):
+        print "%s: %s" % (key, solution[key])
+else:
+    print "No Solution!"
