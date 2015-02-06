@@ -1,9 +1,9 @@
 #!/usr/bin/python
 #CS 156 Intro to AI - 01
 #Homework 1, 09/15/2014
-#Andres Chorro		- 007340983
-#Jannette Pham-Le	- 007855120
-#Justin Tieu		- 007789678
+#Andres Chorro
+#Jannette Pham-Le
+#Justin Tieu
 
 
 from Queue import PriorityQueue

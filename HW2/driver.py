@@ -4,9 +4,9 @@
 CS 156 Intro to AI - 01
 Homework 2, 10/06/2014
 
-Andres Chorro - 007340983
-Jannette Pham-Le - 007855120
-Justin Tieu - 007789678
+Andres Chorro 
+Jannette Pham-Le
+Justin Tieu 
 """
 
 import random
